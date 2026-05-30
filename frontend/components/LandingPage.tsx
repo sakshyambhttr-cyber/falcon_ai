@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Button from './Button'
 import Card from './Card'
 import LayoutGrid from './LayoutGrid'
+import AssetImage from './AssetImage'
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false)
@@ -16,26 +17,20 @@ export default function LandingPage() {
   }
 
   return (
-    <main style={{ padding: '48px', maxWidth: '1400px', margin: '0 auto' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <img src="/images/logo.svg" alt="Founder Falcon" style={{ height: 36 }} />
-        <div>
-          <Button variant="ghost" style={{ marginRight: 12 }} onClick={() => setSignInOpen(true)}>
-            Sign in
-          </Button>
-          <Link href="/workspace" style={{ textDecoration: 'none' }}>
-            <Button variant="primary">Launch App</Button>
-          </Link>
-        </div>
-      </header>
+    <main className="ff-landing">
+      <div className="ff-landing-actions">
+        <Button variant="ghost" onClick={() => setSignInOpen(true)}>
+          Sign in
+        </Button>
+      </div>
 
       <section
+        className="ff-landing-hero"
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 520px',
           gap: 48,
-          alignItems: 'center',
-          marginTop: 64
+          alignItems: 'center'
         }}
       >
         <div>
@@ -88,30 +83,32 @@ export default function LandingPage() {
                 Enter Workspace
               </Button>
             </Link>
-            <Button variant="outline" style={{ padding: '12px 24px', fontSize: 15 }} onClick={openDemo}>
-              Watch Demo
-            </Button>
+            <Link href="/demo" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" style={{ padding: '12px 24px', fontSize: 15 }}>
+                Watch Demo
+              </Button>
+            </Link>
           </div>
 
           <div style={{ display: 'flex', gap: 28, marginTop: 48, alignItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <img src="/images/voice.svg" alt="Voice assistant" style={{ width: 32, height: 32 }} />
-              <small style={{ marginTop: 8, fontSize: 11, color: '#8aaab5', fontWeight: 600 }}>
-                Voice Powered
-              </small>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <img src="/images/prd.svg" alt="AI PRD generator" style={{ width: 32, height: 32 }} />
-              <small style={{ marginTop: 8, fontSize: 11, color: '#8aaab5', fontWeight: 600 }}>
-                AI Co-founder
-              </small>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <img src="/images/global.svg" alt="Global reach" style={{ width: 32, height: 32 }} />
-              <small style={{ marginTop: 8, fontSize: 11, color: '#8aaab5', fontWeight: 600 }}>
-                Real Outputs
-              </small>
-            </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <AssetImage asset="voice" size={32} alt="Voice" />
+                <small style={{ marginTop: 8, fontSize: 11, color: '#8aaab5', fontWeight: 600 }}>
+                  Voice Powered
+                </small>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <AssetImage asset="prd" size={32} alt="PRD" />
+                <small style={{ marginTop: 8, fontSize: 11, color: '#8aaab5', fontWeight: 600 }}>
+                  AI Co-founder
+                </small>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <AssetImage asset="global" size={32} alt="Outputs" />
+                <small style={{ marginTop: 8, fontSize: 11, color: '#8aaab5', fontWeight: 600 }}>
+                  Real Outputs
+                </small>
+              </div>
           </div>
         </div>
 
@@ -164,7 +161,8 @@ export default function LandingPage() {
         <div style={{ marginTop: 48 }}>
           <LayoutGrid columns={4} gap={24}>
             <Card>
-              <img src="/images/prd.svg" alt="AI Validation" style={{ width: 32, height: 32, marginBottom: 16 }} />
+              <AssetImage asset="prd" size={32} alt="" />
+              <div style={{ height: 16 }} />
               <h3 style={{ color: '#e9fbff', fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>
                 Instant AI Scopes
               </h3>
@@ -174,7 +172,8 @@ export default function LandingPage() {
               </p>
             </Card>
             <Card>
-              <img src="/images/global.svg" alt="PRD Generator" style={{ width: 32, height: 32, marginBottom: 16 }} />
+              <AssetImage asset="global" size={32} alt="" />
+              <div style={{ height: 16 }} />
               <h3 style={{ color: '#e9fbff', fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>
                 Detailed PRDs
               </h3>
@@ -184,7 +183,8 @@ export default function LandingPage() {
               </p>
             </Card>
             <Card>
-              <img src="/images/voice.svg" alt="Technical Specs" style={{ width: 32, height: 32, marginBottom: 16 }} />
+              <AssetImage asset="voice" size={32} alt="" />
+              <div style={{ height: 16 }} />
               <h3 style={{ color: '#e9fbff', fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>
                 Technical Spec Documents
               </h3>
@@ -194,7 +194,8 @@ export default function LandingPage() {
               </p>
             </Card>
             <Card>
-              <img src="/images/demo-mock.svg" alt="Roadmaps" style={{ width: 32, height: 32, marginBottom: 16 }} />
+              <AssetImage asset="nav-demo" size={32} alt="" />
+              <div style={{ height: 16 }} />
               <h3 style={{ color: '#e9fbff', fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>
                 Iterative Roadmaps
               </h3>
@@ -234,7 +235,7 @@ export default function LandingPage() {
                 Close
               </Button>
               <Link href="/workspace" style={{ textDecoration: 'none' }}>
-                <Button variant="primary">Open Workspace</Button>
+                <Button variant="primary">Try AI Builder Now</Button>
               </Link>
             </div>
           </Card>

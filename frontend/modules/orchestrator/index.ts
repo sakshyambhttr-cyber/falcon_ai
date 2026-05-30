@@ -1,37 +1,35 @@
-import { analyzeIdea } from '../ai-engine'
-import { buildDocumentPack } from '../doc-generator'
-import MemoryStore from '../memory-system'
-import type { LLMClient } from '../../types/core'
+import { getSessionStore } from '../session-store'
+import { runIntelligencePipeline } from './intelligence-pipeline'
+import { compilePrompt } from './prompt-compiler'
+import { planStages } from './stage-planner'
+import { StreamingController } from './streaming-controller'
+import type { PipelineMode, SubmitIdeaRequest } from '../../types/events'
 
-export type OrchestratorOptions = {
-  llm?: LLMClient
-}
+export type { CompiledPrompt } from './prompt-compiler'
+export type { PlannedStage } from './stage-planner'
+export { compilePrompt, planStages, StreamingController, runIntelligencePipeline }
 
-export class Orchestrator {
-  private memory: MemoryStore
-
-  constructor(memory?: MemoryStore){
-    this.memory = memory || new MemoryStore()
-  }
-
-  async runPipeline(projectId: string, idea: string, opts: OrchestratorOptions = {}){
-    await this.memory.addIdea(projectId, idea)
-    const analysis = await analyzeIdea(idea)
-    await this.memory.addConversation(projectId, {
-      id: `entry-${Date.now()}`,
-      role: 'assistant',
-      text: JSON.stringify(analysis),
-      ts: Date.now()
+/** AI Orchestrator — session lifecycle + intelligence pipeline execution. */
+export class AIOrchestrator {
+  startSession(input: SubmitIdeaRequest) {
+    const store = getSessionStore()
+    const session = store.create({
+      userId: input.userId || 'anonymous',
+      idea: input.idea.trim(),
+      mode: input.mode || 'full'
     })
 
-    const documents = buildDocumentPack(analysis)
+    void runIntelligencePipeline(session.id, session.idea, session.mode)
 
     return {
-      analysis,
-      documents,
-      llm: opts.llm || null
+      sessionId: session.id,
+      streamUrl: `/api/stream/${session.id}`
     }
+  }
+
+  getSession(sessionId: string) {
+    return getSessionStore().get(sessionId)
   }
 }
 
-export default Orchestrator
+export default AIOrchestrator

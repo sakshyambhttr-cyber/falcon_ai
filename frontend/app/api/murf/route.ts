@@ -17,11 +17,12 @@ export async function POST(request: Request){
   try{
     const body = await request.json().catch(() => ({}))
     const text = sanitizeVoiceText(String(body?.text || ''))
+    const voiceId = String(body?.voiceId || 'en-US-natalie')
     if(!text){
       return jsonResponse({ error: 'Text is required' }, 400)
     }
 
-    const speechResponse = await generateMurfSpeech(text)
+    const speechResponse = await generateMurfSpeech(text, voiceId)
 
     if (speechResponse.fallback || !speechResponse.audioFile) {
       return jsonResponse({

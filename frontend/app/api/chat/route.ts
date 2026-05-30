@@ -1,88 +1,77 @@
-import { generateAIEngineResponse, sanitizeStartupIdea } from '../../../modules/ai-engine'
+/**
+ * Legacy chat endpoint — proxies to event-driven intelligence pipeline.
+ * Prefer POST /api/idea/submit + GET /api/stream/:sessionId
+ */
+import { AIOrchestrator } from '../../../modules/orchestrator'
+import { sanitizeStartupIdea } from '../../../modules/ai-engine'
+import { getSessionStore } from '../../../modules/session-store'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-function sseChunk(event: string, data: unknown) {
-  return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`
-}
-
-const STAGE_DELAYS = {
-  thinking: 900,
-  validation: 700,
-  prd: 700,
-  roadmap: 600
-} as const
-
 export async function POST(request: Request) {
+  const body = await request.json().catch(() => ({}))
+  const idea = sanitizeStartupIdea(String(body?.idea || ''))
+  const orchestrator = new AIOrchestrator()
+  const { sessionId } = orchestrator.startSession({ idea, userId: 'legacy-chat', mode: 'full' })
+
   const encoder = new TextEncoder()
-
   const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const body = await request.json().catch(() => ({}))
-        const idea = sanitizeStartupIdea(String(body?.idea || ''))
-
-        controller.enqueue(
-          encoder.encode(
-            sseChunk('stage', {
-              stage: 'thinking',
-              message: 'Analyzing market fit, audience pain points, and competitive positioning...'
-            })
+    start(controller) {
+      const store = getSessionStore()
+      const unsubscribe = store.subscribe(sessionId, event => {
+        if (event.type === 'final.summary') {
+          controller.enqueue(
+            encoder.encode(
+              `event: stage\ndata: ${JSON.stringify({
+                stage: 'ready',
+                message: 'Package ready',
+                data: {
+                  validation: {
+                    score: (event.data as { fundability_score: number }).fundability_score,
+                    summary: (event.data as { one_line_pitch: string }).one_line_pitch
+                  },
+                  prd: {
+                    title: (event.data as { startup_name_suggestion: string }).startup_name_suggestion,
+                    features: [],
+                    userStories: []
+                  },
+                  roadmap: store.get(sessionId)?.memory.roadmap.map(r => ({
+                    phase: r.title,
+                    tasks: r.tasks
+                  }))
+                }
+              })}\n\n`
+            )
           )
-        )
-        await new Promise(r => setTimeout(r, STAGE_DELAYS.thinking))
+          setTimeout(() => {
+            unsubscribe()
+            controller.close()
+          }, 200)
+          return
+        }
 
-        const responseData = await generateAIEngineResponse(idea)
-
-        controller.enqueue(
-          encoder.encode(
-            sseChunk('stage', {
-              stage: 'validation',
-              message: `Validation complete — score ${responseData.validation.score}%`,
-              data: responseData.validation
-            })
+        const stageMap: Record<string, string> = {
+          'idea.analysis': 'thinking',
+          'market.analysis': 'thinking',
+          'validation.report': 'validation',
+          'prd.section': 'prd',
+          'roadmap.step': 'roadmap'
+        }
+        const stage = stageMap[event.type]
+        if (stage) {
+          controller.enqueue(
+            encoder.encode(
+              `event: stage\ndata: ${JSON.stringify({ stage, message: event.type, data: event.data })}\n\n`
+            )
           )
-        )
-        await new Promise(r => setTimeout(r, STAGE_DELAYS.validation))
+        }
+      })
 
-        controller.enqueue(
-          encoder.encode(
-            sseChunk('stage', {
-              stage: 'prd',
-              message: `PRD synthesized — ${responseData.prd.title}`,
-              data: responseData.prd
-            })
-          )
-        )
-        await new Promise(r => setTimeout(r, STAGE_DELAYS.prd))
-
-        controller.enqueue(
-          encoder.encode(
-            sseChunk('stage', {
-              stage: 'roadmap',
-              message: `Roadmap built — ${responseData.roadmap.length} execution phases`,
-              data: responseData.roadmap
-            })
-          )
-        )
-        await new Promise(r => setTimeout(r, STAGE_DELAYS.roadmap))
-
-        controller.enqueue(
-          encoder.encode(
-            sseChunk('stage', {
-              stage: 'ready',
-              message: 'Startup operating package ready.',
-              data: responseData
-            })
-          )
-        )
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Analysis failed'
-        controller.enqueue(encoder.encode(sseChunk('error', { message })))
-      } finally {
+      request.signal.addEventListener('abort', () => {
+        unsubscribe()
         controller.close()
-      }
+      })
     }
   })
 
