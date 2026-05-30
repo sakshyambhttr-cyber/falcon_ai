@@ -121,3 +121,106 @@ body{background:var(--bg);color:#cfeff4;font-family:Inter,ui-sans-serif,system-u
 /* Theme classes */
 .ff-theme-dark{--bg:#05070a}
 .ff-theme-light{--bg:#f6f8fb}
+
+/* Premium Motion & Animation Layer */
+.ff-float-mock {
+  animation: ff-float 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes ff-float {
+  0% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 4px 12px rgba(0,229,255,0.05)); }
+  100% { transform: translateY(-10px) rotate(0.4deg); filter: drop-shadow(0 20px 36px rgba(0,229,255,0.22)); }
+}
+
+.ff-live-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 80px;
+  width: 100%;
+}
+
+.ff-live-bar {
+  width: 4px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: height 0.15s ease, opacity 0.15s ease;
+}
+
+.ff-live-waveform.active .ff-live-bar {
+  animation: ff-bounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes ff-bounce {
+  0% {
+    height: 8px;
+    transform: scaleY(1);
+    opacity: 0.35;
+  }
+  100% {
+    height: 64px;
+    transform: scaleY(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(0,229,255,0.5));
+  }
+}
+
+.ff-tab-content-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.ff-tab-content-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ff-tab-content-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.ff-tab-content-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 255, 0.2);
+}
+
+.ff-score-ring {
+  --score: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: conic-gradient(
+    var(--neon-cyan) calc(var(--score) * 1%),
+    rgba(255, 255, 255, 0.06) 0
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.12);
+}
+
+.ff-score-ring-inner {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+}
+
+.ff-score-ring-inner strong {
+  font-size: 18px;
+  color: #e9fbff;
+}
+
+.ff-score-ring-inner span {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: #8aaab5;
+  font-weight: 700;
+}
+
