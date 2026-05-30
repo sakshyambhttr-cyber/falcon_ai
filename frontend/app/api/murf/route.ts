@@ -1,10 +1,7 @@
-function sanitizeVoiceText(input: string): string{
-  return input
-    .replace(/[\u0000-\u001f\u007f]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 220)
-}
+import { generateMurfSpeech, sanitizeVoiceText } from '../../../modules/murf-engine'
+
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 function jsonResponse(body: unknown, status = 200){
   return new Response(JSON.stringify(body), {
@@ -16,11 +13,6 @@ function jsonResponse(body: unknown, status = 200){
   })
 }
 
-function getServerEnv(name: 'MURF_API_KEY' | 'MURF_API_URL'): string | undefined{
-  const processEnv = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
-  return processEnv?.[name]
-}
-
 export async function POST(request: Request){
   try{
     const body = await request.json().catch(() => ({}))
@@ -29,36 +21,23 @@ export async function POST(request: Request){
       return jsonResponse({ error: 'Text is required' }, 400)
     }
 
-    const apiKey = getServerEnv('MURF_API_KEY')
-    if(!apiKey){
+    const speechResponse = await generateMurfSpeech(text)
+
+    if (speechResponse.fallback || !speechResponse.audioFile) {
       return jsonResponse({
         fallback: true,
         text,
-        message: 'MURF_API_KEY is missing. Set it in Vercel or frontend/.env.local for local dev.'
+        message: speechResponse.message || 'Activating local speaking fallback.'
       }, 200)
     }
 
-    const endpoint = getServerEnv('MURF_API_URL') || 'https://api.murf.ai/v1/tts'
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ text })
-    })
-
-    if(!response.ok){
-      const details = await response.text().catch(() => response.statusText)
-      return jsonResponse({
-        fallback: true,
-        text,
-        message: `Murf request failed: ${response.status}`,
-        details
-      }, 200)
+    // Fetch the audio binary from the temporary URL and pipe/stream it
+    const audioRes = await fetch(speechResponse.audioFile)
+    if (!audioRes.ok) {
+      throw new Error(`Failed to download audio file from ${speechResponse.audioFile}`)
     }
 
-    const arrayBuffer = await response.arrayBuffer()
+    const arrayBuffer = await audioRes.arrayBuffer()
     return new Response(arrayBuffer, {
       status: 200,
       headers: {
@@ -67,7 +46,8 @@ export async function POST(request: Request){
       }
     })
   }catch(error){
-    const message = error instanceof Error ? error.message : 'Unknown Murf error'
+    const message = error instanceof Error ? error.message : 'Unknown route handler Murf error'
     return jsonResponse({ fallback: true, message }, 200)
   }
 }
+

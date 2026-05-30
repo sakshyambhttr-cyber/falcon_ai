@@ -1,12 +1,22 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import '../../styles/design.css'
 import ThemeProvider from '../../components/ThemeProvider'
 import WorkspaceScreen from '../../components/WorkspaceScreen'
 
-export default function WorkspacePage(){
+function WorkspaceFallback() {
+  return (
+    <main className="ff-workspace" style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ color: '#8aaab5' }}>Loading workspace…</p>
+    </main>
+  )
+}
+
+export default function WorkspacePage() {
   return (
     <ThemeProvider>
-      <WorkspaceScreen />
+      <Suspense fallback={<WorkspaceFallback />}>
+        <WorkspaceScreen />
+      </Suspense>
     </ThemeProvider>
   )
 }

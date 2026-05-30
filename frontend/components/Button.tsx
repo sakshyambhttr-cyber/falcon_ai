@@ -1,3 +1,5 @@
+'use client'
+
 import React, { ButtonHTMLAttributes } from 'react'
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
