@@ -1,0 +1,24 @@
+:root{
+  --bg:#0b0f14;
+  --panel: rgba(255,255,255,0.03);
+  --glass: rgba(255,255,255,0.04);
+  --neon-blue: #00e5ff;
+  --neon-cyan: #00fff0;
+  --accent: linear-gradient(90deg,var(--neon-blue),var(--neon-cyan));
+  --glass-blur: 12px;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 10% 10%, rgba(0,230,255,0.03), transparent), var(--bg);color:#cfeff4;font-family:Inter,ui-sans-serif,system-ui}
+.glass{background:var(--glass);backdrop-filter: blur(var(--glass-blur));border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:16px}
+.landing-hero{height:100vh;display:flex;align-items:center;justify-content:center}
+.hero{width:760px;text-align:center}
+.hero h1{font-size:2.4rem;color:var(--neon-blue);margin:0}
+.cta{margin-top:18px;padding:12px 20px;border-radius:10px;background:var(--accent);border:none;color:#001}
+.workspace-root{display:grid;grid-template-columns:240px 1fr 420px;gap:20px;padding:28px;height:100vh}
+.sidebar{min-height:calc(100vh - 56px)}
+.center-panel{display:flex;flex-direction:column;gap:12px}
+.chat-panel{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+.voice-orb{position:relative;height:72px}
+.orb{width:56px;height:56px;border-radius:50%;background:var(--neon-blue);box-shadow:0 0 18px rgba(0,229,255,0.12), 0 0 6px rgba(0,255,240,0.04)}
+.output-panel{min-height:calc(100vh - 56px);overflow:auto}
