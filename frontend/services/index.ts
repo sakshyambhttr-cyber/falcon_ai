@@ -1,2 +1,0 @@
-// Services placeholder
-export default {}

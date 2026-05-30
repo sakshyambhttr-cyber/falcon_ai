@@ -1,1 +1,0 @@
-Workspace UI: Sidebar, Center Chat, Voice Orb, Output Panel.
