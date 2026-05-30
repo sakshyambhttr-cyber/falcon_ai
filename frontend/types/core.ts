@@ -1,52 +1,22 @@
-export type ValidationResult = {
-  summary: string
-  score: number
-  risks?: string[]
-  opportunities?: string[]
-}
-
 export type AIValidation = {
+  score: number // 0-100
   summary: string
-  score: number
-  risks: string[]
-  opportunities: string[]
 }
 
-export type PRDSection = {
-  heading: string
-  body: string
-}
-
-export type PRDDocument = {
+export type AIPRD = {
   title: string
-  description?: string
-  sections: PRDSection[]
-}
-
-export type AIPrdDocument = {
-  title: string
-  description: string
-  sections: PRDSection[]
-}
-
-export type Roadmap = {
-  quarters: Array<{q: string; items: string[]}>
+  features: string[]
+  userStories: string[]
 }
 
 export type AIRoadmapItem = {
   phase: string
-  items: string[]
-}
-
-export type AIAnalysis = {
-  validation: ValidationResult
-  prd: PRDDocument
-  roadmap: Roadmap
+  tasks: string[]
 }
 
 export type AIEngineResponse = {
   validation: AIValidation
-  prds: AIPrdDocument[]
+  prd: AIPRD
   roadmap: AIRoadmapItem[]
 }
 
@@ -61,3 +31,4 @@ export type DocumentPack = {
 export type LLMClient = {
   generateStructured: (prompt: string, opts?: Record<string, any>) => Promise<any>
 }
+
