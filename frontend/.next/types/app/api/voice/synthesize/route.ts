@@ -1,4 +1,4 @@
-// File: C:\Users\livel\OneDrive\Desktop\falcon2 - Copy\frontend\app\api\voice\synthesize\route.ts
+// File: /vercel/sandbox/primary/frontend/app/api/voice/synthesize/route.ts
 import * as entry from '../../../../../../app/api/voice/synthesize/route.js'
 import type { NextRequest } from 'next/server.js'
 

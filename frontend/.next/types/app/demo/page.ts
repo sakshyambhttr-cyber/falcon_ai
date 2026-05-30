@@ -1,4 +1,4 @@
-// File: C:\Users\livel\OneDrive\Desktop\falcon2 - Copy\frontend\app\demo\page.tsx
+// File: /vercel/sandbox/primary/frontend/app/demo/page.tsx
 import * as entry from '../../../../app/demo/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

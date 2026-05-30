@@ -1,4 +1,4 @@
-// File: C:\Users\livel\OneDrive\Desktop\falcon2 - Copy\frontend\app\api\stream\[sessionId]\route.ts
+// File: /vercel/sandbox/primary/frontend/app/api/stream/[sessionId]/route.ts
 import * as entry from '../../../../../../app/api/stream/[sessionId]/route.js'
 import type { NextRequest } from 'next/server.js'
 

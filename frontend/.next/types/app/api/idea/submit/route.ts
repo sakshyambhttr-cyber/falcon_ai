@@ -1,4 +1,4 @@
-// File: C:\Users\livel\OneDrive\Desktop\falcon2 - Copy\frontend\app\api\idea\submit\route.ts
+// File: /vercel/sandbox/primary/frontend/app/api/idea/submit/route.ts
 import * as entry from '../../../../../../app/api/idea/submit/route.js'
 import type { NextRequest } from 'next/server.js'
 

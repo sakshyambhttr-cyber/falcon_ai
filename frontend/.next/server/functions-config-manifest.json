@@ -1,1 +1,1 @@
-{"version":1,"functions":{"/api/ai":{},"/api/voice/synthesize":{},"/api/murf":{},"/api/idea/submit":{},"/api/stream/[sessionId]":{},"/api/chat":{}}}
+{"version":1,"functions":{"/api/ai":{},"/api/chat":{},"/api/idea/submit":{},"/api/murf":{},"/api/voice/synthesize":{},"/api/stream/[sessionId]":{}}}
