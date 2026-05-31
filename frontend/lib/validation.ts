@@ -14,7 +14,7 @@ const MAX_FEATURE_ID_LENGTH = 64
 
 export const AiRouteSchema = z.object({
   idea: z
-    .string({ required_error: 'idea is required' })
+    .string({ message: 'idea is required' })
     .min(1, 'idea must not be empty')
     .max(MAX_IDEA_LENGTH, `idea must be at most ${MAX_IDEA_LENGTH} characters`),
 })
@@ -25,7 +25,7 @@ export type AiRouteInput = z.infer<typeof AiRouteSchema>
 
 export const IdeaSubmitSchema = z.object({
   idea: z
-    .string({ required_error: 'idea is required' })
+    .string({ message: 'idea is required' })
     .min(1, 'idea must not be empty')
     .max(MAX_IDEA_LENGTH, `idea must be at most ${MAX_IDEA_LENGTH} characters`),
   userId: z
@@ -45,7 +45,7 @@ export type IdeaSubmitInput = z.infer<typeof IdeaSubmitSchema>
 
 export const ChatRouteSchema = z.object({
   idea: z
-    .string({ required_error: 'idea is required' })
+    .string({ message: 'idea is required' })
     .min(1, 'idea must not be empty')
     .max(MAX_IDEA_LENGTH, `idea must be at most ${MAX_IDEA_LENGTH} characters`),
 })
@@ -56,7 +56,7 @@ export type ChatRouteInput = z.infer<typeof ChatRouteSchema>
 
 export const ResearchRouteSchema = z.object({
   query: z
-    .string({ required_error: 'query is required' })
+    .string({ message: 'query is required' })
     .min(1, 'query must not be empty')
     .max(MAX_QUERY_LENGTH, `query must be at most ${MAX_QUERY_LENGTH} characters`),
 })
@@ -67,14 +67,14 @@ export type ResearchRouteInput = z.infer<typeof ResearchRouteSchema>
 
 export const MurfRouteSchema = z.object({
   text: z
-    .string({ required_error: 'text is required' })
+    .string({ message: 'text is required' })
     .min(1, 'text must not be empty')
     .max(MAX_VOICE_TEXT_LENGTH, `text must be at most ${MAX_VOICE_TEXT_LENGTH} characters`),
   voiceId: z
     .string()
     .max(64)
     .optional()
-    .default('en-US-natalie'),
+    .default('en-US-amara'),
 })
 
 export type MurfRouteInput = z.infer<typeof MurfRouteSchema>
@@ -83,7 +83,7 @@ export type MurfRouteInput = z.infer<typeof MurfRouteSchema>
 
 export const VoiceSynthesizeSchema = z.object({
   text: z
-    .string({ required_error: 'text is required' })
+    .string({ message: 'text is required' })
     .min(1, 'text must not be empty')
     .max(MAX_VOICE_TEXT_LENGTH, `text must be at most ${MAX_VOICE_TEXT_LENGTH} characters`),
   voice: z
@@ -99,7 +99,7 @@ export type VoiceSynthesizeInput = z.infer<typeof VoiceSynthesizeSchema>
 
 export const FeatureInsightSchema = z.object({
   feature: z
-    .string({ required_error: 'feature is required' })
+    .string({ message: 'feature is required' })
     .min(1, 'feature must not be empty')
     .max(MAX_FEATURE_ID_LENGTH, `feature id must be at most ${MAX_FEATURE_ID_LENGTH} characters`)
     .regex(/^[a-zA-Z0-9_.-]+$/, 'feature id contains invalid characters'),
@@ -123,6 +123,6 @@ export function parseBody<T>(
   if (result.success) {
     return { success: true, data: result.data }
   }
-  const message = result.error.errors.map(e => e.message).join('; ')
+  const message = result.error.issues.map(e => e.message).join('; ')
   return { success: false, error: message }
 }

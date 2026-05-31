@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server'
 import { getSessionStore } from '../../../../modules/session-store'
 import { StreamingController } from '../../../../modules/orchestrator/streaming-controller'
 import type { FalconEvent } from '../../../../types/events'
@@ -5,76 +6,103 @@ import type { FalconEvent } from '../../../../types/events'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+type RouteProps = {
+  params: Promise<{ sessionId: string }>
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: { sessionId: string } }
+  request: NextRequest,
+  props: RouteProps
 ) {
-  const sessionId = params.sessionId
+  const { sessionId } = await props.params
+
   const store = getSessionStore()
   const session = store.get(sessionId)
 
   if (!session) {
-    return new Response(JSON.stringify({ error: 'Session not found' }), {
-      status: 404,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({ error: 'Session not found' }),
+      {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
   }
 
   const url = new URL(request.url)
-  const fromIndex = Number(url.searchParams.get('fromIndex') || '0')
+  const fromIndex = Number(url.searchParams.get('fromIndex') ?? '0')
 
   const encoder = new TextEncoder()
   const streamCtrl = new StreamingController(sessionId, fromIndex)
 
   const stream = new ReadableStream({
     start(controller) {
-      const send = (event: FalconEvent) => {
-        controller.enqueue(encoder.encode(streamCtrl.formatSSE(event)))
-      }
-
-      const backlog = session.events.filter(e => e.index > fromIndex)
-      for (const event of backlog) {
-        send(event)
-      }
-
       let closed = false
-      let poll: ReturnType<typeof setInterval>
-      let unsubscribe: () => void
+      let poll: ReturnType<typeof setInterval> | undefined
+      let unsubscribe: (() => void) | undefined
 
-      const closeStream = () => {
+      const safeClose = () => {
         if (closed) return
         closed = true
+
         if (poll) clearInterval(poll)
         unsubscribe?.()
+
         try {
           controller.close()
+        } catch {}
+      }
+
+      const send = (event: FalconEvent) => {
+        if (closed) return
+
+        try {
+          controller.enqueue(
+            encoder.encode(streamCtrl.formatSSE(event))
+          )
         } catch {
-          /* already closed */
+          safeClose()
         }
       }
 
-      unsubscribe = store.subscribe(sessionId, event => {
+      // backlog
+      for (const event of session.events) {
         if (event.index > fromIndex) send(event)
-        if (event.type === 'final.summary' || event.type === 'error') {
-          setTimeout(closeStream, 250)
+      }
+
+      // live updates
+      unsubscribe = store.subscribe(sessionId, (event: FalconEvent) => {
+        if (event.index > fromIndex) send(event)
+
+        if (
+          event.type === 'final.summary' ||
+          event.type === 'error'
+        ) {
+          setTimeout(safeClose, 200)
         }
       })
 
+      // safety poll
       poll = setInterval(() => {
         const current = store.get(sessionId)
-        if (!current) {
-          closeStream()
-          return
-        }
-        if (current.status === 'complete' || current.status === 'error') {
-          const last = current.events[current.events.length - 1]
-          if (last && (last.type === 'final.summary' || last.type === 'error')) {
-            setTimeout(closeStream, 400)
+        if (!current) return safeClose()
+
+        const last = current.events[current.events.length - 1]
+
+        if (
+          current.status === 'complete' ||
+          current.status === 'error'
+        ) {
+          if (
+            last?.type === 'final.summary' ||
+            last?.type === 'error'
+          ) {
+            setTimeout(safeClose, 200)
           }
         }
-      }, 400)
+      }, 500)
 
-      request.signal.addEventListener('abort', closeStream)
+      request.signal.addEventListener('abort', safeClose)
     }
   })
 

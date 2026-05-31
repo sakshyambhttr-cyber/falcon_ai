@@ -13,11 +13,11 @@ export type MurfVoicePreset = {
 /** @see https://murf.ai/api/docs/voices-styles/voice-library */
 export const MURF_VOICE_PRESETS: Record<VoiceStyle, MurfVoicePreset> = {
   advisor: {
-    label: 'Natalie',
-    voiceId: 'en-US-natalie',
-    murfStyle: 'Conversational',
+    label: 'Amara',
+    voiceId: 'en-US-amara',
+    murfStyle: 'Narration',
     gender: 'Female',
-    description: 'Professional startup advisor'
+    description: 'Professional female advisor'
   },
   executive: {
     label: 'Amara',

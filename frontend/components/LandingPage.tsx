@@ -11,6 +11,30 @@ import SiteFooter from './SiteFooter'
 import { BentoGrid, type BentoItem } from './ui/bento-grid'
 import type { FeatureId } from '../modules/feature-insight'
 
+const ENGAGEMENT_ITEMS = [
+  {
+    id: 'briefing',
+    label: 'Briefing pulse',
+    title: 'Watch the advisor turn one sentence into structure',
+    description:
+      'The lower strip previews the live workflow: idea intake, validation, PRD generation, and execution planning.'
+  },
+  {
+    id: 'workspace',
+    label: 'Workspace flow',
+    title: 'Jump into the workspace when you are ready',
+    description:
+      'Keep the interaction moving with voice input, document tabs, and guided next steps instead of a static landing page.'
+  },
+  {
+    id: 'outcomes',
+    label: 'Output preview',
+    title: 'See the deliverables before you commit',
+    description:
+      'The product promises real founder outputs, so the UI should show the outcome layer right on the landing page.'
+  }
+] as const
+
 const FEATURES: Array<{
   id: FeatureId
   asset: 'ai' | 'global' | 'document' | 'roadmap'
@@ -49,6 +73,9 @@ const FEATURES: Array<{
 
 export default function LandingPage() {
   const [activeFeature, setActiveFeature] = useState<FeatureId | null>(null)
+  const [activeEngagement, setActiveEngagement] = useState<typeof ENGAGEMENT_ITEMS[number]['id']>(ENGAGEMENT_ITEMS[0].id)
+
+  const engagementItem = ENGAGEMENT_ITEMS.find(item => item.id === activeEngagement) || ENGAGEMENT_ITEMS[0]
 
   const bentoItems: BentoItem[] = FEATURES.map((feature, index) => ({
     title: feature.title,
@@ -155,6 +182,45 @@ export default function LandingPage() {
                 }
               }}
             />
+
+            <section className="ff-landing-engagement" aria-label="Interactive product preview">
+              <div className="ff-landing-engagement-panel">
+                <div className="ff-landing-engagement-copy">
+                  <span className="ff-eyebrow">Interactive preview</span>
+                  <h3>{engagementItem.title}</h3>
+                  <p>{engagementItem.description}</p>
+                  <div className="ff-landing-engagement-actions" role="tablist" aria-label="Preview modes">
+                    {ENGAGEMENT_ITEMS.map(item => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={activeEngagement === item.id}
+                        className={`ff-landing-engagement-chip${activeEngagement === item.id ? ' active' : ''}`}
+                        onClick={() => setActiveEngagement(item.id)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="ff-landing-engagement-visual">
+                  <div className="ff-landing-engagement-stat ff-landing-engagement-stat-primary">
+                    <strong>Live</strong>
+                    <span>Founder-grade output</span>
+                  </div>
+                  <div className="ff-landing-engagement-stat">
+                    <strong>3</strong>
+                    <span>core deliverables</span>
+                  </div>
+                  <div className="ff-landing-engagement-stat">
+                    <strong>1</strong>
+                    <span>voice-guided flow</span>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
 
           <SiteFooter />

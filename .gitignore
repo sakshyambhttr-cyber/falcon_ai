@@ -6,3 +6,9 @@ dist
 .DS_Store
 coverage
 .cursor
+.env.example
+*.log
+.next/
+node_modules/
+dist/
+.env
