@@ -2612,21 +2612,35 @@ body.ff-nav-menu-open {
 
 .ff-idea-actions { margin-top: var(--sp-4); }
 
-/* Keep the primary action visible above the bottom navigation */
+/* Desktop: normal flow */
 .ff-idea-capture .ff-idea-actions {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--ff-bottomnav-h) + var(--sp-3));
+  position: static;
   display: flex;
-  justify-content: center;
-  z-index: 120;
-  padding: var(--sp-2);
-  background: linear-gradient(180deg, rgba(12,18,25,0.0), rgba(12,18,25,0.6));
+  justify-content: flex-start;
+  background: transparent;
+  padding: 0;
 }
 
-@media (min-width: 900px) {
-  .ff-idea-capture .ff-idea-actions { position: static; justify-content: flex-start; background: transparent; padding: 0; }
+/* Mobile only: pin above bottom nav so it's always reachable */
+@media (max-width: 899px) {
+  .ff-idea-capture .ff-idea-actions {
+    position: sticky;
+    bottom: calc(var(--ff-bottomnav-h, 64px) + var(--sp-2));
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 120;
+    padding: var(--sp-2) var(--sp-4);
+    background: linear-gradient(180deg, rgba(12,18,25,0.0) 0%, rgba(12,18,25,0.85) 40%);
+    /* Ensure it doesn't overlap content above — sticky scrolls with the page */
+    margin-top: var(--sp-4);
+  }
+
+  /* Add bottom padding to the form so the sticky button doesn't cover the last item */
+  .ff-idea-form {
+    padding-bottom: calc(var(--ff-bottomnav-h, 64px) + 80px);
+  }
 }
 
 /* Floating CTA for IdeaCapture */
@@ -6416,5 +6430,60 @@ details.ff-voice-history[open] .ff-voice-history-summary::before {
 
   .ff-workspace-eyebrow {
     display: none;
+  }
+}
+
+
+/* ============================================================
+   MOBILE IDEA CAPTURE — OVERFLOW & BUTTON OVERLAP FIX
+   ============================================================ */
+
+@media (max-width: 899px) {
+  /* Prevent horizontal overflow on the whole capture page */
+  .ff-idea-capture {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Voice style grid — single column, full width, no overflow */
+  .ff-voice-style-grid {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .ff-voice-style-btn {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  /* Idea form panel — no horizontal overflow */
+  .ff-idea-form-panel,
+  .ff-idea-form-panel .ff-panel-body,
+  .ff-idea-form {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  /* Submit button — full width on mobile, no overlap */
+  .ff-idea-capture .ff-idea-actions .ff-btn,
+  .ff-idea-capture .ff-idea-actions .ff-idea-submit-btn {
+    width: 100%;
+    max-width: 420px;
+    justify-content: center;
+  }
+
+  /* Remove the floating submit button on mobile — sticky is enough */
+  .ff-idea-floating-submit {
+    display: none !important;
+  }
+
+  /* Idea voice block — prevent overflow */
+  .ff-idea-voice-block {
+    width: 100%;
+    overflow: hidden;
   }
 }
