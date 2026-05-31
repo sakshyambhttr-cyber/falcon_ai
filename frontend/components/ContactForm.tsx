@@ -69,29 +69,31 @@ export default function ContactForm() {
           </Button>
         </div>
       ) : (
-        <form className="ff-contact-form" onSubmit={handleSubmit} noValidate>
-          <label className="ff-field">
-            <span>Full Name</span>
-            <input
-              className={errors.fullName ? 'ff-input-error' : ''}
-              value={values.fullName}
-              onChange={e => setValues(v => ({ ...v, fullName: e.target.value }))}
-              placeholder="Jane Founder"
-            />
-            {errors.fullName && <em>{errors.fullName}</em>}
-          </label>
+        <form className="ff-contact-form ff-contact-form-compact" onSubmit={handleSubmit} noValidate>
+          <div className="ff-contact-form-row">
+            <label className="ff-field">
+              <span>Full Name</span>
+              <input
+                className={errors.fullName ? 'ff-input-error' : ''}
+                value={values.fullName}
+                onChange={e => setValues(v => ({ ...v, fullName: e.target.value }))}
+                placeholder="Jane Founder"
+              />
+              {errors.fullName && <em>{errors.fullName}</em>}
+            </label>
 
-          <label className="ff-field">
-            <span>Email Address</span>
-            <input
-              type="email"
-              className={errors.email ? 'ff-input-error' : ''}
-              value={values.email}
-              onChange={e => setValues(v => ({ ...v, email: e.target.value }))}
-              placeholder="you@startup.com"
-            />
-            {errors.email && <em>{errors.email}</em>}
-          </label>
+            <label className="ff-field">
+              <span>Email Address</span>
+              <input
+                type="email"
+                className={errors.email ? 'ff-input-error' : ''}
+                value={values.email}
+                onChange={e => setValues(v => ({ ...v, email: e.target.value }))}
+                placeholder="you@startup.com"
+              />
+              {errors.email && <em>{errors.email}</em>}
+            </label>
+          </div>
 
           <label className="ff-field">
             <span>Startup Idea (optional)</span>
@@ -105,11 +107,11 @@ export default function ContactForm() {
           <label className="ff-field">
             <span>Message</span>
             <textarea
-              className={errors.message ? 'ff-input-error' : ''}
-              rows={5}
+              className={`ff-contact-message${errors.message ? ' ff-input-error' : ''}`}
+              rows={3}
               value={values.message}
               onChange={e => setValues(v => ({ ...v, message: e.target.value }))}
-              placeholder="Tell us how Founder Falcon can help…"
+              placeholder="Tell us how Murf Falcon can help…"
             />
             {errors.message && <em>{errors.message}</em>}
           </label>

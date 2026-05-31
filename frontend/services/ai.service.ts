@@ -5,7 +5,6 @@ import {
   submitIdea
 } from './intelligence-stream.service'
 
-export { analyzeIdea, generateAIEngineResponse, sanitizeStartupIdea } from '../modules/ai-engine'
 
 /**
  * Event-driven intelligence pipeline (preferred).
@@ -44,8 +43,8 @@ export async function streamChatAnalysis(
 
   let prdFeatures: string[] = []
   let prdTitle = ''
-  let validation: AIEngineResponse['validation'] | null = null
-  let roadmap: AIEngineResponse['roadmap'] = []
+  let validation: { score: number; summary: string } | null = null
+  let roadmap: { phase: string; tasks: string[] }[] = []
 
   return submitAndStreamIntelligence(idea, ev => {
     const stage = legacyMap[ev.type] || ev.type

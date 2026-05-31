@@ -2,86 +2,81 @@
 
 import React from 'react'
 import Card from './Card'
-import LayoutGrid from './LayoutGrid'
 import AssetImage from './AssetImage'
-import AnimatedBackground from './AnimatedBackground'
+import AmbientBackground from './AmbientBackground'
 import type { AssetKey } from '../lib/asset-registry'
 
 const CAPABILITIES: { title: string; body: string; icon: AssetKey }[] = [
   {
     title: 'Idea Generation',
-    body: 'Capture natural-language startup concepts and instantly structure them into actionable scopes.',
+    body: 'Structure natural-language concepts into actionable scopes.',
     icon: 'logo'
   },
   {
     title: 'Validation Reports',
-    body: 'Receive viability scores, executive summaries, and risk-aware market signals.',
+    body: 'Viability scores, summaries, and market signals.',
     icon: 'global'
   },
   {
     title: 'PRD Generator',
-    body: 'Auto-build product requirements with features, user stories, and success criteria.',
+    body: 'Features, user stories, and success criteria.',
     icon: 'prd'
   },
   {
     title: 'Roadmap Builder',
-    body: 'Phase-based execution plans with checklisted milestones across MVP → launch.',
+    body: 'Phase-based plans from MVP to launch.',
     icon: 'ws-roadmap'
   },
   {
     title: 'AI Assistant',
-    body: 'Murf-powered voice summaries with browser TTS fallback — listen to your operating package.',
-    icon: 'voice'
+    body: 'Intelligent co-founder guidance across every stage.',
+    icon: 'ai'
+  },
+  {
+    title: 'Voice Integration',
+    body: 'Murf-powered summaries with live waveform playback.',
+    icon: 'waveform'
   }
 ]
 
 export default function AboutContent() {
   return (
-    <div className="ff-page ff-page-about">
-      <AnimatedBackground />
-      <div className="ff-page-inner">
+    <div className="ff-page ff-page-flow ff-page-about">
+      <AmbientBackground />
+      <div className="ff-page-flow-inner">
         <header className="ff-page-header">
-          <AssetImage asset="nav-about" size={32} alt="Founder Falcon" />
+          <span className="ff-icon-box">
+            <AssetImage asset="nav-about" size={24} alt="" />
+          </span>
           <div>
-            <h1>About Founder Falcon</h1>
+            <h1>About Murf Falcon</h1>
             <p>The AI Startup Operating System for builders who move at founder speed.</p>
           </div>
         </header>
 
-        <Card className="ff-about-hero">
-          <h2>What is Founder Falcon?</h2>
+        <Card className="ff-page-intro-card">
+          <h2>What is Murf Falcon?</h2>
           <p>
-            Founder Falcon is a voice-first AI co-founder that transforms a single startup idea into a
-            complete operating package — validation, PRD, technical specs, roadmap, and pitch materials —
-            streamed live inside a premium dark workspace.
+            Murf Falcon is a voice-first AI co-founder that transforms a single startup idea into a
+            complete operating package — validation, PRD, technical specs, roadmap, and pitch
+            materials — streamed live inside a premium workspace.
           </p>
         </Card>
 
-        <section>
+        <section className="ff-page-section">
           <h3 className="ff-section-title">What it does</h3>
-          <LayoutGrid columns={2} gap={18}>
+          <div className="ff-about-cap-grid">
             {CAPABILITIES.map(cap => (
               <Card key={cap.title} className="ff-about-cap-card">
-                <AssetImage asset={cap.icon} size={28} alt="" />
+                <span className="ff-icon-box ff-about-cap-icon">
+                  <AssetImage asset={cap.icon} size={24} alt="" />
+                </span>
                 <h4>{cap.title}</h4>
                 <p>{cap.body}</p>
               </Card>
             ))}
-          </LayoutGrid>
-        </section>
-
-        <Card className="ff-about-voice-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <AssetImage asset="voice" size={32} alt="Voice" />
-            <div>
-              <h4>Murf Voice Integration</h4>
-              <p style={{ margin: 0, color: '#8aaab5', fontSize: 14, lineHeight: 1.55 }}>
-                Hear your validation summary spoken aloud. Toggle voice styles, play AI summaries, and
-                watch the live waveform react in the workspace.
-              </p>
-            </div>
           </div>
-        </Card>
+        </section>
       </div>
     </div>
   )

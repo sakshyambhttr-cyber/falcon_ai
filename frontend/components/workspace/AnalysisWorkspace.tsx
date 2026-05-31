@@ -5,7 +5,7 @@ import Button from '../Button'
 import Card from '../Card'
 import Panel from '../Panel'
 import AssetImage from '../AssetImage'
-import { buildDocumentPack, documentPackToMarkdown } from '../../modules/doc-generator'
+import { buildDocumentPack } from '../../modules/doc-generator'
 import { renderMarkdown } from '../../lib/render-markdown'
 import { intelligenceToLegacyResponse } from '../../lib/intelligence-state'
 import type { IntelligenceUIState } from '../../lib/intelligence-state'
@@ -13,6 +13,7 @@ import { WORKSPACE_NAV, type WorkspaceNavSection } from '../../lib/workspace-sec
 import VoiceAssistantPanel, { type VoiceStyle } from './VoiceAssistantPanel'
 import IntelligenceEventRenderer from './IntelligenceEventRenderer'
 import WorkspaceMobileTabs, { type MobileWorkspacePanel } from './WorkspaceMobileTabs'
+import type { VoicePhase } from '../WorkspaceScreen'
 
 type AnalysisWorkspaceProps = {
   idea: string
@@ -21,11 +22,23 @@ type AnalysisWorkspaceProps = {
   onNavChange: (section: WorkspaceNavSection) => void
   voiceEnabled: boolean
   voiceStyle: VoiceStyle
-  isSpeaking: boolean
+  voicePhase: VoicePhase
+  voiceText: string
+  voiceError: string | null
+  hasSpokenSummary: boolean
   onToggleVoice: (v: boolean) => void
   onVoiceStyleChange: (s: VoiceStyle) => void
   onPlaySummary: () => void
+  onReplaySummary: () => void
+  onStopSpeaking: () => void
+  onAskFollowUp: (question: string) => void
   onExport: () => void
+  // Phase 6: voice conversation mode
+  voiceConversationMode: boolean
+  onToggleConversationMode: (active: boolean) => void
+  onRegisterAutoListen: (fn: (() => void) | null) => void
+  // Phase 9: streaming
+  isStreamingResponse: boolean
 }
 
 function ValidationScoreRing({ score }: { score: number }) {
@@ -47,11 +60,21 @@ export default function AnalysisWorkspace({
   onNavChange,
   voiceEnabled,
   voiceStyle,
-  isSpeaking,
+  voicePhase,
+  voiceText,
+  voiceError,
+  hasSpokenSummary,
   onToggleVoice,
   onVoiceStyleChange,
   onPlaySummary,
-  onExport
+  onReplaySummary,
+  onStopSpeaking,
+  onAskFollowUp,
+  onExport,
+  voiceConversationMode,
+  onToggleConversationMode,
+  onRegisterAutoListen,
+  isStreamingResponse
 }: AnalysisWorkspaceProps) {
   const [mobilePanel, setMobilePanel] = useState<MobileWorkspacePanel>('stream')
   const isLoading = intelligence.status === 'streaming' || intelligence.status === 'connecting'
@@ -60,23 +83,25 @@ export default function AnalysisWorkspace({
   const navContent = useMemo(() => {
     const { memory } = intelligence
     if (!legacy) {
-      if (activeNav === 'idea-overview') return `# Idea Overview\n\n${idea}`
+      if (activeNav === 'executive-briefing') {
+        return `# Executive Briefing\n\nSynthesizing co-founder advice for your concept...\n\n### Your Idea:\n${idea}`
+      }
       return ''
     }
     const pack = buildDocumentPack(legacy)
     switch (activeNav) {
-      case 'idea-overview':
-        return `# Idea Overview\n\n${idea}\n\n## Analysis\n${memory.analysis?.summary || ''}\n\n**Category:** ${memory.analysis?.category || '—'}`
-      case 'market-analysis':
-        return `# Market Analysis\n\n| Metric | Value |\n| --- | --- |\n| Size | ${memory.market?.market_size || '—'} |\n| Growth | ${memory.market?.growth_rate || '—'} |\n| Competition | ${memory.market?.competition_level || '—'} |`
+      case 'executive-briefing':
+        return pack.executiveBriefing
       case 'validation':
         return pack.startupValidationReport
       case 'prd':
         return pack.prdDocument
       case 'roadmap':
         return pack.roadmapDocument
+      case 'mvp-strategy':
+        return pack.mvpStrategy
       case 'export':
-        return '# Export\n\nDownload the full Founder Pack markdown bundle.'
+        return `# Export Document Package\n\nYou're ready to download the full, professional, founder-grade operating pack for **${legacy.startupName || 'your startup idea'}**.\n\nThis complete bundle includes:\n- **Executive Briefing**\n- **Validation Report**\n- **PRD**\n- **Startup Roadmap**\n- **MVP Strategy**\n\nClick the button below in the sidebar to download your markdown package.`
       default:
         return ''
     }
@@ -84,7 +109,7 @@ export default function AnalysisWorkspace({
 
   const title =
     intelligence.memory.final?.startup_name_suggestion ||
-    legacy?.prd?.title ||
+    legacy?.startupName ||
     'Intelligence Pipeline'
 
   const score = intelligence.memory.validation?.viability_score
@@ -93,9 +118,10 @@ export default function AnalysisWorkspace({
     <div className="ff-analysis-workspace" data-mobile-panel={mobilePanel}>
       <WorkspaceMobileTabs active={mobilePanel} onChange={setMobilePanel} />
 
-      <aside className="ff-ws-nav ff-ws-panel" data-panel="nav">
+      {/* ── Left: Navigation sidebar ── */}
+      <aside id="ws-panel-nav" className="ff-ws-nav ff-ws-panel" data-panel="nav">
         <Panel title="Workspace Navigation">
-          <nav className="ff-ws-nav-list">
+          <nav className="ff-ws-nav-list" aria-label="Workspace sections">
             {WORKSPACE_NAV.map(item => (
               <button
                 key={item.id}
@@ -105,6 +131,7 @@ export default function AnalysisWorkspace({
                   onNavChange(item.id)
                   setMobilePanel('nav')
                 }}
+                aria-current={activeNav === item.id ? 'page' : undefined}
               >
                 <AssetImage asset={item.icon} size={20} alt="" />
                 <span>{item.label}</span>
@@ -112,14 +139,19 @@ export default function AnalysisWorkspace({
             ))}
           </nav>
           {activeNav === 'export' && legacy && (
-            <Button variant="primary" style={{ width: '100%', marginTop: 12 }} onClick={onExport}>
+            <Button
+              variant="primary"
+              style={{ width: '100%', marginTop: 12 }}
+              onClick={onExport}
+            >
               Export Founder Pack
             </Button>
           )}
         </Panel>
       </aside>
 
-      <section className="ff-ws-center ff-ws-panel" data-panel="stream">
+      {/* ── Center: Intelligence feed + document viewer ── */}
+      <section id="ws-panel-stream" className="ff-ws-center ff-ws-panel" data-panel="stream">
         <Card className="ff-ws-center-header">
           <div>
             <h2>{title}</h2>
@@ -132,31 +164,45 @@ export default function AnalysisWorkspace({
           <IntelligenceEventRenderer state={intelligence} />
         </Panel>
 
-        <Panel title={WORKSPACE_NAV.find(n => n.id === activeNav)?.label || 'Document'} className="ff-ws-doc-panel">
+        <Panel
+          title={WORKSPACE_NAV.find(n => n.id === activeNav)?.label || 'Document'}
+          className="ff-ws-doc-panel"
+        >
           <div className="ff-tab-content-container ff-ws-doc-view">
             {isLoading && !navContent ? (
               <div className="ff-loading-state">
                 <div className="ff-skeleton ff-skeleton-line large" />
                 <div className="ff-skeleton ff-skeleton-line" />
+                <div className="ff-skeleton ff-skeleton-line" />
               </div>
             ) : (
-              <div className="ff-markdown-body">{renderMarkdown(navContent)}</div>
+              <div className="ff-ws-doc-view">{renderMarkdown(navContent)}</div>
             )}
           </div>
         </Panel>
       </section>
 
-      <aside className="ff-ws-voice ff-ws-panel" data-panel="voice">
-        <Panel title="AI Assistant">
+      {/* ── Right: Voice advisor panel ── */}
+      <aside id="ws-panel-voice" className="ff-ws-voice ff-ws-panel" data-panel="voice">
+        <Panel title="AI Voice Advisor">
           <VoiceAssistantPanel
             voiceEnabled={voiceEnabled}
             onToggleVoice={onToggleVoice}
             voiceStyle={voiceStyle}
             onVoiceStyleChange={onVoiceStyleChange}
             onPlaySummary={onPlaySummary}
-            isSpeaking={isSpeaking}
-            isAnalyzing={isLoading}
+            onReplaySummary={onReplaySummary}
+            onStopSpeaking={onStopSpeaking}
+            onAskFollowUp={onAskFollowUp}
+            voicePhase={voicePhase}
+            voiceText={voiceText}
+            voiceError={voiceError}
+            hasSpokenSummary={hasSpokenSummary}
             summaryAvailable={Boolean(intelligence.memory.final || intelligence.memory.validation)}
+            voiceConversationMode={voiceConversationMode}
+            onToggleConversationMode={onToggleConversationMode}
+            onRegisterAutoListen={onRegisterAutoListen}
+            isStreamingResponse={isStreamingResponse}
           />
         </Panel>
       </aside>

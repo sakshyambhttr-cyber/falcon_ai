@@ -1,9 +1,11 @@
 import { generateMurfSpeech, sanitizeVoiceText } from '../../../modules/murf-engine'
+import { parseBody, MurfRouteSchema } from '../../../lib/validation'
+import { checkStrictRateLimit } from '../../../lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-function jsonResponse(body: unknown, status = 200){
+function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -13,12 +15,22 @@ function jsonResponse(body: unknown, status = 200){
   })
 }
 
-export async function POST(request: Request){
-  try{
-    const body = await request.json().catch(() => ({}))
-    const text = sanitizeVoiceText(String(body?.text || ''))
-    const voiceId = String(body?.voiceId || 'en-US-natalie')
-    if(!text){
+export async function POST(request: Request) {
+  // Rate limit: strict (10 req / 60 s) — voice generation is expensive
+  const rateLimitResponse = await checkStrictRateLimit(request)
+  if (rateLimitResponse) return rateLimitResponse
+
+  try {
+    const raw = await request.json().catch(() => ({}))
+    const parsed = parseBody(MurfRouteSchema, raw)
+    if (!parsed.success) {
+      return jsonResponse({ error: parsed.error }, 400)
+    }
+
+    const text = sanitizeVoiceText(parsed.data.text)
+    const voiceId = parsed.data.voiceId
+
+    if (!text) {
       return jsonResponse({ error: 'Text is required' }, 400)
     }
 
@@ -32,10 +44,10 @@ export async function POST(request: Request){
       }, 200)
     }
 
-    // Fetch the audio binary from the temporary URL and pipe/stream it
+    // Fetch the audio binary from the temporary URL and stream it back
     const audioRes = await fetch(speechResponse.audioFile)
     if (!audioRes.ok) {
-      throw new Error(`Failed to download audio file from ${speechResponse.audioFile}`)
+      throw new Error('Failed to retrieve audio from voice service')
     }
 
     const arrayBuffer = await audioRes.arrayBuffer()
@@ -46,9 +58,9 @@ export async function POST(request: Request){
         'Cache-Control': 'no-store'
       }
     })
-  }catch(error){
-    const message = error instanceof Error ? error.message : 'Unknown route handler Murf error'
+  } catch (error) {
+    console.error('[/api/murf] Error:', error instanceof Error ? error.message : error)
+    const message = error instanceof Error ? error.message : 'Voice synthesis failed'
     return jsonResponse({ fallback: true, message }, 200)
   }
 }
-

@@ -5,6 +5,7 @@ import { planStages } from './stage-planner'
 import { StreamingController } from './streaming-controller'
 import type {
   FalconEvent,
+  FinalSummaryData,
   IdeaAnalysisData,
   MarketAnalysisData,
   PipelineMode,
@@ -47,10 +48,10 @@ function inferDifficulty(score: number): 'low' | 'medium' | 'high' {
 
 function buildIntelligenceFromEngine(idea: string, engine: AIEngineResponse) {
   const keywords = extractKeywords(idea)
-  const score = engine.validation.score
+  const score = engine.validationReport.opportunityScore
 
   const ideaAnalysis: IdeaAnalysisData = {
-    summary: engine.validation.summary,
+    summary: engine.prd.overview,
     category: inferCategory(keywords),
     difficulty: inferDifficulty(score),
     keywords
@@ -58,33 +59,33 @@ function buildIntelligenceFromEngine(idea: string, engine: AIEngineResponse) {
 
   const hash = hashText(idea)
   const marketAnalysis: MarketAnalysisData = {
-    market_size: `$${(2 + (hash % 8)).toFixed(1)}B addressable segment`,
+    market_size: engine.validationReport.marketPotential,
     growth_rate: `${12 + (hash % 15)}% CAGR (estimated)`,
-    competition_level: score >= 75 ? 'medium' : score >= 55 ? 'high' : 'high'
+    competition_level: score >= 75 ? 'low' : score >= 55 ? 'medium' : 'high'
   }
 
   const validationReport: ValidationReportData = {
     viability_score: score,
-    risks: [
-      'Execution velocity vs. well-funded incumbents',
-      'Customer acquisition cost in early channels',
-      score < 65 ? 'Product-market fit still unproven at scale' : 'Scaling ops before retention is proven'
-    ],
-    opportunities: [
-      `Clear pain around ${keywords[0] || 'target users'}`,
-      'AI-native workflow reduces time-to-insight by 10x',
-      'Voice + structured output differentiation in founder tooling'
-    ]
+    risks: engine.validationReport.weaknesses,
+    opportunities: engine.validationReport.strengths,
+    marketPotential: engine.validationReport.marketPotential,
+    riskAssessment: engine.validationReport.riskAssessment,
+    strengths: engine.validationReport.strengths,
+    weaknesses: engine.validationReport.weaknesses
   }
 
   const prdSections: { section: PrdSectionName; content: string }[] = [
     {
+      section: 'overview',
+      content: engine.prd.overview
+    },
+    {
       section: 'problem_statement',
-      content: `Founders struggle to validate and scope: "${idea.slice(0, 160)}${idea.length > 160 ? '…' : ''}"`
+      content: engine.internalAnalysis.painPoints.map(p => `• ${p}`).join('\n')
     },
     {
       section: 'solution',
-      content: `${engine.prd.title} delivers structured intelligence — validation, PRD, and roadmap in one operating session.`
+      content: `${engine.startupName} is designed to solve these pain points by offering: ${engine.prd.overview}`
     },
     {
       section: 'features',
@@ -95,21 +96,42 @@ function buildIntelligenceFromEngine(idea: string, engine: AIEngineResponse) {
       content: engine.prd.userStories.map(s => `• ${s}`).join('\n')
     },
     {
-      section: 'scope',
-      content: `MVP focus: core intake, streaming intelligence pipeline, export pack. Post-MVP: team workspaces, investor mode.`
+      section: 'requirements',
+      content: engine.prd.requirements.map(r => `• ${r}`).join('\n')
     }
   ]
 
-  const roadmapSteps = engine.roadmap.map((phase, i) => ({
-    phase: i + 1,
-    title: phase.phase,
-    tasks: phase.tasks
-  }))
+  const roadmapSteps = [
+    {
+      phase: 1,
+      title: engine.roadmap.phase1.name,
+      tasks: engine.roadmap.phase1.tasks
+    },
+    {
+      phase: 2,
+      title: engine.roadmap.phase2.name,
+      tasks: engine.roadmap.phase2.tasks
+    },
+    {
+      phase: 3,
+      title: engine.roadmap.phase3.name,
+      tasks: engine.roadmap.phase3.tasks
+    },
+    {
+      phase: 4,
+      title: 'Milestones & Timeline',
+      tasks: engine.roadmap.milestones
+    }
+  ]
 
-  const finalSummary = {
-    startup_name_suggestion: engine.prd.title,
-    one_line_pitch: `${engine.prd.title}: ${engine.validation.summary.slice(0, 120)}…`,
-    fundability_score: Math.min(95, Math.max(40, score - 5 + (hash % 8)))
+  const finalSummary: FinalSummaryData = {
+    startup_name_suggestion: engine.startupName,
+    one_line_pitch: `${engine.startupName}: ${engine.prd.overview.slice(0, 120)}…`,
+    fundability_score: Math.min(95, Math.max(40, score - 5 + (hash % 8))),
+    executive_briefing: engine.executiveBriefing,
+    mvp_launch_strategy: engine.mvpStrategy.launchStrategy,
+    mvp_minimum_features: engine.mvpStrategy.minimumFeatures,
+    mvp_first_users: engine.mvpStrategy.firstUsers
   }
 
   return { ideaAnalysis, marketAnalysis, validationReport, prdSections, roadmapSteps, finalSummary }

@@ -1,112 +1,177 @@
 import type { AIEngineResponse, DocumentPack } from '../../types/core'
 
-function titleCase(input: string): string{
-  return input.split(/\s+/).filter(Boolean).map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
+function formatMonetization(response: AIEngineResponse): string {
+  if (response.internalAnalysis?.monetization?.length) {
+    return response.internalAnalysis.monetization.map(m => `\n  - ${m}`).join('')
+  }
+  return '\n  - Premium subscription tiers\n  - Usage-based credits'
 }
 
-function firstPrdTitle(response: AIEngineResponse): string{
-  return response.prd?.title?.trim() || 'Startup Product'
+function formatStrengths(response: AIEngineResponse): string {
+  const list = response.validationReport?.strengths || response.internalAnalysis?.strengths || []
+  if (list.length) {
+    return list.map(s => `- 🔥 ${s}`).join('\n')
+  }
+  return '- 🔥 Strong early validation signal\n- 🔥 Clear workflow automation opportunity'
 }
 
-function validationSummary(response: AIEngineResponse): string{
-  const validation = response.validation
-  return [
-    `### Executive Summary`,
-    `> ${validation.summary}`,
+function formatWeaknesses(response: AIEngineResponse): string {
+  const list = response.validationReport?.weaknesses || response.internalAnalysis?.weaknesses || []
+  if (list.length) {
+    return list.map(w => `- ⚠️ ${w}`).join('\n')
+  }
+  return '- ⚠️ Dependency on platform licensing fees\n- ⚠️ Scalability in high-volume traffic segments'
+}
+
+function formatRoadmapTasks(tasks: string[] | undefined): string {
+  if (tasks?.length) {
+    return tasks.map(t => `- [ ] ${t}`).join('\n')
+  }
+  return '- [ ] Complete MVP interface mockup\n- [ ] Integrate initial payment links'
+}
+
+export function buildDocumentPack(response: AIEngineResponse): DocumentPack {
+  const startupName = response.startupName || 'Startup opportunity'
+
+  const executiveBriefing = [
+    `# Executive Founder Briefing`,
     ``,
-    `### Score Matrix`,
-    `| Metric | Value | Rating |`,
-    `| :--- | :--- | :--- |`,
-    `| **Validation Score** | \`${validation.score}%\` | ${validation.score >= 80 ? '🔥 High Potential' : validation.score >= 60 ? '⚡ Moderate Viability' : '⚠️ High Risk'} |`
-  ].join('\n')
-}
-
-function prdSections(response: AIEngineResponse): string{
-  const prd = response.prd
-  return [
-    `### Core Features`,
-    ...prd.features.map(f => `- ✨ ${f}`),
+    `## Identity: Founder Falcon AI Advisor`,
     ``,
-    `### Target User Stories`,
-    ...prd.userStories.map(story => `- 👥 ${story}`)
+    `### Partner Message`,
+    `> **From your AI Co-Founder:**`,
+    `> ${response.executiveBriefing}`,
+    ``,
+    `---`,
+    ``,
+    `### Strategic Overview`,
+    `* **Core Startup Concept:** ${response.internalAnalysis?.concept || 'AI-native automation'}`,
+    `* **Target Audience:** ${response.internalAnalysis?.targetAudience || 'Early stage founders'}`,
+    `* **Business Model:** ${response.internalAnalysis?.businessModel || 'Freemium SaaS subscription model'}`,
+    `* **Market Opportunity:** ${response.internalAnalysis?.marketOpportunity || 'High-growth builder sector'}`,
+    `* **Monetization Paths:**${formatMonetization(response)}`,
+    ``,
+    `### Immediate Next Steps`,
+    `1. Review the **Validation Report** tab to analyze strengths and weaknesses.`,
+    `2. Explore the **PRD** and **MVP Strategy** tabs to align on system boundaries.`,
+    `3. Review the **Roadmap** milestones to launch inside 12 weeks.`
   ].join('\n')
-}
 
-function roadmapSections(response: AIEngineResponse): string{
-  return response.roadmap.map(phase => [
-    `### ${phase.phase}`,
-    ...phase.tasks.map(task => `- [ ] ${task}`)
-  ].join('\n')).join('\n\n')
-}
-
-function technicalDesignDocument(response: AIEngineResponse): string{
-  const title = titleCase(firstPrdTitle(response))
-  const featuresList = response.prd?.features?.map(f => `- **${f.split(':')[0]} Engine Module:** Core algorithm handling user scopes.`).join('\n') || ''
-  return [
-    `# Technical Design Document - ${title}`,
-    '',
-    `## 1. System Overview`,
-    `Founder Falcon is a modular, voice-first AI operating system built to streamline startup ideation, validation, product specifications, and roadmap synthesis.`,
-    '',
-    `## 2. Component Architecture`,
-    featuresList,
-    '',
-    `## 3. Core Tech Stack`,
-    `| Technology | Role |`,
-    `| :--- | :--- |`,
-    `| **Next.js 14 / React 18** | Core Web Framework |`,
-    `| **TypeScript 5** | Strict Type System Safety |`,
-    `| **Google Gemini API** | Content Synthesis & Structured Output |`,
-    `| **Murf.ai Speech API** | Realistic Conversational Voice Playback |`,
-    `| **SpeechSynthesis API** | Resilient Browser-Native Playback Fallback |`
+  const startupValidationReport = [
+    `# Startup Validation Report`,
+    ``,
+    `## 1. Market Potential & Viability`,
+    `${response.validationReport?.marketPotential || 'High growth potential segment with clear developer demand.'}`,
+    ``,
+    `### Opportunity Rating`,
+    `* **Overall Opportunity Score:** \`${response.validationReport?.opportunityScore || 85}%\` (High Potential Opportunity)`,
+    `* **Risk Assessment:** ${response.validationReport?.riskAssessment || 'Manageable operational and CAC sensitivity risks.'}`,
+    ``,
+    `---`,
+    ``,
+    `## 2. Competitive & Risk Profile`,
+    `* **Competitor Space:** ${response.internalAnalysis?.competitors?.join(', ') || 'Incumbents and generic generative wrappers'}`,
+    `* **Technical Complexity:** ${response.internalAnalysis?.technicalComplexity || 'Moderate Next.js and LLM integration complexity'}`,
+    ``,
+    `### Core Strengths (Opportunities)`,
+    formatStrengths(response),
+    ``,
+    `### Core Weaknesses (Risks)`,
+    formatWeaknesses(response)
   ].join('\n')
-}
 
-function pitchDeckContent(response: AIEngineResponse): string{
-  const title = titleCase(firstPrdTitle(response))
-  const featuresBrief = response.prd?.features?.map(f => `- ${f}`).join('\n') || ''
-  return [
-    `# Pitch Deck Outline - ${title}`,
-    '',
-    `## Slide 1: The Vision`,
-    `${title} - A revolutionary platform designed to solve critical pain points.`,
-    '',
-    `## Slide 2: Core Capabilities`,
-    `Our MVP focuses on high-impact value metrics:`,
-    featuresBrief,
-    '',
-    `## Slide 3: Target Market`,
-    `Tech innovators, startup builders, early stage founders, and student operators looking to build fast.`,
-    '',
-    `## Slide 4: Growth Roadmap`,
-    `A multi-phase launch execution plan spanning validation matching, generative features, and direct system portals.`
+  const prdDocument = [
+    `# Product Requirements Document (PRD)`,
+    ``,
+    `## 1. Product Overview`,
+    `${response.prd?.overview || 'Modular workspace and intelligence system designed for rapid startup synthesis.'}`,
+    ``,
+    `---`,
+    ``,
+    `## 2. Core Features & Scope`,
+    `* **Scoping Boundary:** ${response.internalAnalysis?.productScope || 'MVP visual documents, speech playbacks'}`,
+    `* **Growth Potential:** ${response.internalAnalysis?.growthPotential || 'Viral growth via exported design documents'}`,
+    ``,
+    `### System Features`,
+    `${response.prd?.features?.map(f => `- ✨ ${f}`).join('\n') || '- ✨ Ingestion layer\n- ✨ Visualizer tabs'}`,
+    ``,
+    `---`,
+    ``,
+    `## 3. User Stories`,
+    `${response.prd?.userStories?.map(story => `- 👥 ${story}`).join('\n') || '- 👥 As a founder, I want instant documents'}`,
+    ``,
+    `---`,
+    ``,
+    `## 4. Technical & Non-Functional Requirements`,
+    `${response.prd?.requirements?.map(req => `- ⚙️ ${req}`).join('\n') || '- ⚙️ Response latencies under 6 seconds'}`
   ].join('\n')
-}
 
-export function buildDocumentPack(response: AIEngineResponse): DocumentPack{
+  const roadmapDocument = [
+    `# Startup Execution Roadmap`,
+    ``,
+    `## Phase 1: ${response.roadmap?.phase1?.name || 'Discovery & Core Validation'}`,
+    formatRoadmapTasks(response.roadmap?.phase1?.tasks),
+    ``,
+    `---`,
+    ``,
+    `## Phase 2: ${response.roadmap?.phase2?.name || 'MVP Development'}`,
+    formatRoadmapTasks(response.roadmap?.phase2?.tasks),
+    ``,
+    `---`,
+    ``,
+    `## Phase 3: ${response.roadmap?.phase3?.name || 'Beta Launch & Feedback'}`,
+    formatRoadmapTasks(response.roadmap?.phase3?.tasks),
+    ``,
+    `---`,
+    ``,
+    `## High-Level Execution Milestones`,
+    `${response.roadmap?.milestones?.map(m => `- 📌 ${m}`).join('\n') || '- 📌 Milestone 1: Core setup complete'}`
+  ].join('\n')
+
+  const mvpStrategy = [
+    `# MVP Strategy & Launch Plan`,
+    ``,
+    `## 1. Launch & Distribution Strategy`,
+    `${response.mvpStrategy?.launchStrategy || 'Single-purpose web workbench driving organic traffic from social networks.'}`,
+    ``,
+    `---`,
+    ``,
+    `## 2. Minimum Viable Features`,
+    `*Defines what goes into the launch bundle, ensuring prompt delivery and fast customer validation.*`,
+    `${response.mvpStrategy?.minimumFeatures?.map(f => `- 🎯 ${f}`).join('\n') || '- 🎯 Basic intake inputs\n- 🎯 Spoken co-founder briefing'}`,
+    ``,
+    `---`,
+    ``,
+    `## 3. First-User Acquisition Playbook`,
+    `${response.mvpStrategy?.firstUsers || 'Direct outreach to startup incubators, student hackathons, and product forums.'}`,
+    ``,
+    `---`,
+    ``,
+    `## 4. MVP Recommendations Summary`,
+    `> ${response.internalAnalysis?.mvpRecommendations || 'Keep initial features focused on immediate visual insights.'}`
+  ].join('\n')
+
   return {
-    startupValidationReport: [`# Startup Validation Report - ${firstPrdTitle(response)}`, '', validationSummary(response)].join('\n'),
-    prdDocument: [`# PRD Document - ${firstPrdTitle(response)}`, '', prdSections(response)].join('\n'),
-    technicalDesignDocument: technicalDesignDocument(response),
-    roadmapDocument: [`# Roadmap - ${firstPrdTitle(response)}`, '', roadmapSections(response)].join('\n'),
-    pitchDeckContent: pitchDeckContent(response)
+    executiveBriefing,
+    startupValidationReport,
+    prdDocument,
+    roadmapDocument,
+    mvpStrategy
   }
 }
 
-export function documentPackToMarkdown(pack: DocumentPack): string{
+export function documentPackToMarkdown(pack: DocumentPack): string {
   return [
+    pack.executiveBriefing,
+    '---',
     pack.startupValidationReport,
     '---',
     pack.prdDocument,
     '---',
-    pack.technicalDesignDocument,
-    '---',
     pack.roadmapDocument,
     '---',
-    pack.pitchDeckContent
+    pack.mvpStrategy
   ].join('\n\n')
 }
 
 export default { buildDocumentPack, documentPackToMarkdown }
-
-

@@ -1,20 +1,14 @@
 'use client'
 
+import { BarChart2, BotMessageSquare, FileText, Mic } from 'lucide-react'
 import React from 'react'
-import AssetImage from '../AssetImage'
 
 export type MobileWorkspacePanel = 'stream' | 'nav' | 'voice'
 
-type Tab = {
-  id: MobileWorkspacePanel
-  label: string
-  asset: 'nav-ai' | 'nav-home' | 'voice'
-}
-
-const TABS: Tab[] = [
-  { id: 'stream', label: 'Intelligence', asset: 'nav-ai' },
-  { id: 'nav', label: 'Documents', asset: 'nav-home' },
-  { id: 'voice', label: 'Voice', asset: 'voice' }
+const TABS: Array<{ id: MobileWorkspacePanel; label: string; icon: React.ElementType }> = [
+  { id: 'stream', label: 'Intelligence', icon: BotMessageSquare },
+  { id: 'nav',    label: 'Documents', icon: FileText },
+  { id: 'voice',  label: 'Voice', icon: Mic }
 ]
 
 type Props = {
@@ -31,10 +25,12 @@ export default function WorkspaceMobileTabs({ active, onChange }: Props) {
           type="button"
           role="tab"
           aria-selected={active === tab.id}
-          className={`ff-ws-mobile-tab${active === tab.id ? ' active' : ''}`}
+          className={`ff-ws-tab-btn${active === tab.id ? ' active' : ''}`}
           onClick={() => onChange(tab.id)}
+          id={`ws-tab-${tab.id}`}
+          aria-controls={`ws-panel-${tab.id}`}
         >
-          <AssetImage asset={tab.asset} size={18} alt="" />
+          <tab.icon size={16} aria-hidden="true" />
           <span>{tab.label}</span>
         </button>
       ))}

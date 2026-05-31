@@ -19,6 +19,10 @@ export type ValidationReportData = {
   viability_score: number
   risks: string[]
   opportunities: string[]
+  marketPotential?: string
+  riskAssessment?: string
+  strengths?: string[]
+  weaknesses?: string[]
 }
 
 export type PrdSectionName =
@@ -27,6 +31,8 @@ export type PrdSectionName =
   | 'features'
   | 'users'
   | 'scope'
+  | 'overview'
+  | 'requirements'
 
 export type PrdSectionData = {
   section: PrdSectionName
@@ -43,6 +49,10 @@ export type FinalSummaryData = {
   startup_name_suggestion: string
   one_line_pitch: string
   fundability_score: number
+  executive_briefing?: string
+  mvp_launch_strategy?: string
+  mvp_minimum_features?: string[]
+  mvp_first_users?: string
 }
 
 export type ErrorEventData = {
@@ -114,7 +124,7 @@ export type SubmitIdeaResponse = {
 
 export type VoiceSynthesizeRequest = {
   text: string
-  voice?: 'neutral' | 'deep' | 'energetic' | 'calm'
+  voice?: 'advisor' | 'executive' | 'warm' | 'energetic' | 'neutral' | 'deep' | 'calm'
   speed?: number
 }
 

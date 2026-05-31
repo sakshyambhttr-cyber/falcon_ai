@@ -1,6 +1,8 @@
 import { AIOrchestrator } from '../../../../modules/orchestrator'
 import { sanitizeStartupIdea } from '../../../../modules/ai-engine'
-import type { PipelineMode, SubmitIdeaResponse } from '../../../../types/events'
+import { parseBody, IdeaSubmitSchema } from '../../../../lib/validation'
+import { checkStrictRateLimit } from '../../../../lib/rate-limit'
+import type { SubmitIdeaResponse } from '../../../../types/events'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -13,13 +15,19 @@ function json(body: unknown, status = 200) {
 }
 
 export async function POST(request: Request) {
+  // Rate limit: strict (10 req / 60 s) — triggers full AI pipeline
+  const rateLimitResponse = await checkStrictRateLimit(request)
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
-    const body = await request.json().catch(() => ({}))
-    const idea = sanitizeStartupIdea(String(body?.idea || ''))
-    const userId = String(body?.userId || 'anonymous')
-    const mode = (['full', 'fast', 'validate_only'].includes(body?.mode)
-      ? body.mode
-      : 'full') as PipelineMode
+    const raw = await request.json().catch(() => ({}))
+    const parsed = parseBody(IdeaSubmitSchema, raw)
+    if (!parsed.success) {
+      return json({ error: parsed.error }, 400)
+    }
+
+    const { idea: rawIdea, userId, mode } = parsed.data
+    const idea = sanitizeStartupIdea(rawIdea)
 
     const orchestrator = new AIOrchestrator()
     const result = orchestrator.startSession({ idea, userId, mode })

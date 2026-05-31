@@ -21,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/workspace', label: 'Try AI', icon: 'ai', match: p => p.startsWith('/workspace') }
 ]
 
-export default function BottomNav() {
+export default function BottomNav({ onHomeNavigate }: { onHomeNavigate?: () => void }) {
   const pathname = usePathname() || '/'
 
   return (
@@ -34,6 +34,12 @@ export default function BottomNav() {
               key={item.href}
               href={item.href}
               className={`ff-bottom-nav-item${active ? ' ff-bottom-nav-item-active' : ''}`}
+              aria-current={active ? 'page' : undefined}
+              onClick={() => {
+                if (item.href === '/' && pathname === '/') {
+                  onHomeNavigate?.()
+                }
+              }}
             >
               <span className="ff-bottom-nav-icon-wrap">
                 <AppIcon name={item.icon} size={22} alt="" />

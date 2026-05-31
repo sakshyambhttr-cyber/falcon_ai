@@ -1,5 +1,5 @@
 /**
- * Founder Falcon asset registry — SVG first, PNG fallback.
+ * Murf Falcon asset registry — SVG first, PNG fallback.
  * Scan paths: /public/assets/, /public/images/
  */
 
@@ -11,7 +11,7 @@ export type AssetEntry = {
 
 export const ASSET_REGISTRY = {
   logo: {
-    svg: '/assets/logo.svg',
+    svg: '/images/logo.svg',
     png: '/images/logo.png',
     label: 'Founder Falcon'
   },
@@ -28,14 +28,18 @@ export const ASSET_REGISTRY = {
 
   prd: { svg: '/images/prd.svg' },
   voice: { svg: '/images/voice.svg' },
+  ai: { svg: '/images/ai.svg', label: 'AI' },
+  document: { svg: '/images/document.svg', label: 'Document' },
+  output: { svg: '/images/output.svg', label: 'Output' },
   global: { svg: '/images/global.svg' },
+  roadmap: { svg: '/images/roadmap.svg', label: 'Roadmap' },
   waveform: { svg: '/images/waveform.svg' },
 
   'ws-idea': { svg: '/assets/icons/home.svg', png: '/assets/icons/home.png' },
   'ws-market': { svg: '/images/global.svg' },
   'ws-validation': { svg: '/images/prd.svg' },
   'ws-prd': { svg: '/images/prd.svg' },
-  'ws-roadmap': { svg: '/images/demo-mock.svg' },
+  'ws-roadmap': { svg: '/images/roadmap.svg' },
   'ws-export': { svg: '/images/global.svg' },
 
   'hero-mock': { png: '/images/demo-mock.jpeg' }

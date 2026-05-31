@@ -13,6 +13,8 @@ type AssetImageProps = {
   className?: string
   alt?: string
   priority?: boolean
+  /** Applies brand treatment for logo SVG on dark backgrounds */
+  brand?: boolean
 }
 
 /**
@@ -23,7 +25,8 @@ export default function AssetImage({
   size = 24,
   className = '',
   alt = '',
-  priority = false
+  priority = false,
+  brand = false
 }: AssetImageProps) {
   const entry = getAsset(asset)
   const initialStage = entry.svg ? 'svg' : entry.png ? 'png' : 'text'
@@ -52,10 +55,11 @@ export default function AssetImage({
       alt={label}
       width={size}
       height={size}
-      className={className}
+      className={['ff-ui-icon', brand && asset === 'logo' ? 'ff-brand-logo' : '', className]
+        .filter(Boolean)
+        .join(' ')}
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"
-      style={{ width: size, height: size, objectFit: 'contain', flexShrink: 0 }}
       onError={() => {
         if (stage === 'svg' && entry.png) setStage('png')
         else if (stage === 'png' && entry.svg) setStage('svg')

@@ -41,66 +41,106 @@ function productTitleFromIdea(idea: string, keywords: string[]): string {
   return `${trimmed.slice(0, 45).trim()}...`
 }
 
-function buildValidation(idea: string): AIValidation {
+function generateMockAIEngineResponse(idea: string): AIEngineResponse {
+  const keywords = extractKeywords(idea)
+  const focus = keywords[0] || 'innovators'
+  const title = productTitleFromIdea(idea, keywords)
   const hash = hashText(idea)
-  const keywords = extractKeywords(idea)
-  const focus = keywords.slice(0, 3).join(', ') || 'your target market'
   const score = Math.min(94, Math.max(52, 58 + (hash % 32) + Math.min(keywords.length * 2, 8)))
-  return {
-    summary: `Strong early signal for a solution focused on ${focus}. The concept maps to clear user pain, measurable outcomes, and a viable MVP scope for a first release in 8–12 weeks.`,
-    score
-  }
-}
 
-function buildPrd(idea: string): AIPRD {
-  const keywords = extractKeywords(idea)
-  const productName = productTitleFromIdea(idea, keywords)
-  const focus = keywords[0] || 'users'
   return {
-    title: productName,
-    features: [
-      `Intelligent intake that understands natural-language goals: "${idea.slice(0, 80)}${idea.length > 80 ? '...' : ''}"`,
-      `Personalized matching engine for ${focus} with explainable ranking and confidence scores`,
-      `Guided workflow hub with progress tracking, reminders, and exportable deliverables`,
-      `Analytics dashboard measuring activation, completion rate, and retention cohorts`
-    ],
-    userStories: [
-      `As a ${focus.endsWith('s') ? focus.slice(0, -1) : focus}, I want to describe my goal in plain language so the system can recommend the best next actions.`,
-      `As an operator, I want structured outputs (validation, PRD, roadmap) generated in one session without switching tools.`,
-      `As a stakeholder, I want a concise viability score and milestone plan to decide whether to fund the MVP.`
-    ]
-  }
-}
-
-function buildRoadmap(idea: string): AIRoadmapItem[] {
-  const keywords = extractKeywords(idea)
-  const focus = keywords[0] || 'core users'
-  return [
-      {
-        phase: 'Phase 1: Discovery & Validation',
+    startupName: title,
+    executiveBriefing: `I've looked at your idea for ${title}, and there's something genuinely interesting here. You're targeting ${focus} — a group that's underserved and actively looking for better tools. The timing is right.\n\nThe biggest opportunity is the gap between what people in this space need and what currently exists. If you can close that gap faster than anyone else, you have a real shot at owning this category early.\n\nFor your MVP, keep it tight. Focus on the one thing that delivers the most value, and resist the urge to build everything at once. The risk to watch is scope creep — it's the thing that kills early-stage products more than anything else.\n\nMy recommendation: get something in front of real users within eight weeks. The feedback you'll get is worth more than any amount of planning. The workspace has your full analysis ready — start with the validation report.`,
+    validationReport: {
+      marketPotential: `The target addressable market segment for AI-native builder platforms focused on ${focus} is growing rapidly, with a projected CAGR of 18% over the next five years. Early validation signals show massive developer demand.`,
+      opportunityScore: score,
+      riskAssessment: `Key operational risks include managing execution velocity against larger incumbents, maintaining high developer engagement, and early acquisition costs before organic growth loops kick in.`,
+      strengths: [
+        `Highly specialized workflow targeting a clearly defined customer pain point`,
+        `10x faster time-to-insight compared to generic generative text interfaces`,
+        `Frictionless, voice-native capture that captures abstract concepts instantly`
+      ],
+      weaknesses: [
+        `Reliance on third-party speech synthesis and LLM pricing margins`,
+        `No native database persistence in the earliest prototype release`,
+        `Limited defensive moat against generic foundation model wrappers`
+      ]
+    },
+    prd: {
+      overview: `${title} is a modular, voice-first intelligence workbench designed to accelerate startup ideation, product validation, and roadmap alignment.`,
+      userStories: [
+        `As an entrepreneur, I want to pitch my idea in plain natural language so I can instantly receive validation and structured specifications.`,
+        `As a product manager, I want a complete set of PRD features and developer stories synthesized in one place to skip administrative overhead.`,
+        `As a technical leader, I want a high-fidelity roadmap to align with stakeholders on execution milestones.`
+      ],
+      features: [
+        `Intelligent natural-language ingestion and structured blueprint generation`,
+        `Premium dual-output workspace interface with separated interactive tabs`,
+        `Natural co-founder voice briefing playback powered by speech synthesis`
+      ],
+      requirements: [
+        `Response latency must remain under 6 seconds for optimal conversational flow`,
+        `Markdown documents must be fully responsive across both mobile and desktop screens`,
+        `All API errors must fail gracefully and fall back to high-fidelity mock generators`
+      ]
+    },
+    roadmap: {
+      phase1: {
+        name: `Discovery & Core Validation`,
         tasks: [
-          `Interview 12–15 ${focus} and validate problem intensity`,
-          'Define success metrics, ICP, and pricing hypothesis',
-          'Ship landing page + waitlist to measure demand'
+          `Conduct 10 validation interviews with target ${focus}`,
+          `Launch interactive landing page and waitlist form`,
+          `Synthesize primary monetization opportunities and pricing models`
         ]
       },
-      {
-        phase: 'Phase 2: MVP Build',
+      phase2: {
+        name: `MVP Development`,
         tasks: [
-          'Implement AI intake + structured output pipeline',
-          'Launch core matching/recommendation workflow',
-          'Add onboarding, auth, and basic analytics'
+          `Build responsive next-gen workspace and tab controls`,
+          `Integrate high-performance Gemini Flash API endpoints`,
+          `Implement realistic voice advisor narration playback`
         ]
       },
-      {
-        phase: 'Phase 3: Launch & Scale',
+      phase3: {
+        name: `Beta Launch & Feedback`,
         tasks: [
-          'Run closed beta with 50 active users',
-          'Integrate voice feedback loop and document exports',
-          'Expand channels, partnerships, and retention loops'
+          `Deploy production build to Vercel and run private beta with 50 users`,
+          `Integrate automatic markdown document download and export`,
+          `Analyze voice engagement duration and feature usage metrics`
         ]
-      }
-    ]
+      },
+      milestones: [
+        `Milestone 1: Complete UI layout and local fallback flow (Week 2)`,
+        `Milestone 2: Finalize full live Gemini and voice integrations (Week 6)`,
+        `Milestone 3: Public launch on Product Hunt with 200 waitlisted signups (Week 10)`
+      ]
+    },
+    mvpStrategy: {
+      launchStrategy: `Launch a single-purpose interactive sandbox as a web app. Drive initial traction by showing immediate, high-value visual blueprints to builders.`,
+      minimumFeatures: [
+        `Natural language startup ideation input text area`,
+        `Structured co-founder speech synthesis playback`,
+        `Premium generated documents: Validation Report, PRD, Roadmap, and MVP Strategy`
+      ],
+      firstUsers: `Early-stage indie hackers, student operators, and product managers seeking to rapidly validate early ideas.`
+    },
+    internalAnalysis: {
+      concept: `A voice-first operating system that acts as a technical co-founder.`,
+      targetAudience: `Entrepreneurs, Indie Hackers, Student Founders, Product Managers`,
+      painPoints: [`No access to mentors`, `High cost of advisory`, `Slow document generation`],
+      businessModel: `Freemium SaaS with usage-based AI generation credits`,
+      marketOpportunity: `Millions of new developers seeking high-velocity launch systems`,
+      competitors: [`Generic ChatGPT`, `Traditional PDF business planners`],
+      strengths: [`Voice native`, `Instant PRDs`],
+      weaknesses: [`High prompt latency`],
+      risks: [`Scale limits`],
+      monetization: [`SaaS tier`, `API billing`],
+      productScope: `MVP scoping of AI, Voice, PRD, Roadmap`,
+      mvpRecommendations: `Keep database requirements thin, focus on premium generation visual tabs`,
+      technicalComplexity: `Moderate Next.js client-side streaming and speech synthesis controls`,
+      growthPotential: `High viral loops from shared blueprint exports`
+    }
+  }
 }
 
 export function sanitizeStartupIdea(input: string): string {
@@ -110,14 +150,80 @@ export function sanitizeStartupIdea(input: string): string {
 }
 
 async function callGemini(idea: string, apiKey: string): Promise<AIEngineResponse> {
-  const prompt = `You are Founder Falcon, an AI startup co-founder.
-Analyze this startup idea: "${idea}"
+  const prompt = `You are Founder Falcon, an experienced startup co-founder and elite product strategist.
+Your role is to analyze the following startup idea as a conversational, highly capable AI Co-Founder who is strategic, confident, and concise.
 
-Return ONLY valid JSON matching this shape (no markdown):
+Startup Idea: "${idea}"
+
+Perform a deep, comprehensive analysis of the idea across the following dimensions:
+1. Startup concept
+2. Target audience
+3. Customer pain points
+4. Business model
+5. Market opportunity
+6. Competitors
+7. Strengths
+8. Weaknesses
+9. Risks
+10. Monetization opportunities
+11. Product scope
+12. MVP recommendations
+13. Technical complexity
+14. Growth potential
+
+Return a single valid JSON object. Do NOT wrap the JSON in markdown code blocks (\`\`\`json or similar). Return ONLY the raw JSON string matching exactly this shape:
 {
-  "validation": { "score": number (0-100), "summary": string },
-  "prd": { "title": string, "features": string[] (min 3), "userStories": string[] (min 3) },
-  "roadmap": [{ "phase": string, "tasks": string[] }]
+  "startupName": "A catchy, short name for the startup",
+  "executiveBriefing": "Write this as a senior startup advisor speaking directly and naturally to the founder — warm, confident, strategic, and conversational. Cover: what the idea is, who it serves, why the market timing is right, the single biggest opportunity, the main risk to manage, and the recommended first move. Use short sentences. Vary sentence length for natural rhythm. No lists, no markdown, no bold text, no numbers or percentages. Write exactly 3 to 5 short paragraphs separated by a single newline. Each paragraph should be 2 to 4 sentences. Total length: 130 to 180 words. This text will be spoken aloud by a voice AI — it must sound completely natural when read out loud.",
+  "validationReport": {
+    "marketPotential": "A detailed 1-2 sentence analysis of the target market potential.",
+    "opportunityScore": 85,
+    "riskAssessment": "A clear, professional summary of the primary operational and market risks.",
+    "strengths": ["Strength 1", "Strength 2", "Strength 3"],
+    "weaknesses": ["Weakness 1", "Weakness 2", "Weakness 3"]
+  },
+  "prd": {
+    "overview": "A concise overview of the product requirements and system vision.",
+    "userStories": ["Story 1", "Story 2", "Story 3"],
+    "features": ["Core Feature 1 with short description", "Core Feature 2 with short description", "Core Feature 3 with short description"],
+    "requirements": ["Requirement 1 (e.g. latency, security, scale)", "Requirement 2", "Requirement 3"]
+  },
+  "roadmap": {
+    "phase1": {
+      "name": "Phase 1 Title",
+      "tasks": ["Task 1", "Task 2", "Task 3"]
+    },
+    "phase2": {
+      "name": "Phase 2 Title",
+      "tasks": ["Task 1", "Task 2", "Task 3"]
+    },
+    "phase3": {
+      "name": "Phase 3 Title",
+      "tasks": ["Task 1", "Task 2", "Task 3"]
+    },
+    "milestones": ["Milestone 1 with timeline", "Milestone 2 with timeline", "Milestone 3 with timeline"]
+  },
+  "mvpStrategy": {
+    "launchStrategy": "A strategic, high-value roadmap for launching the MVP successfully.",
+    "minimumFeatures": ["Launch Feature 1", "Launch Feature 2", "Launch Feature 3"],
+    "firstUsers": "Detailed plan on how to acquire the very first cohort of active users."
+  },
+  "internalAnalysis": {
+    "concept": "A 1-sentence concept analysis summary",
+    "targetAudience": "Description of primary user personas",
+    "painPoints": ["Pain Point 1", "Pain Point 2"],
+    "businessModel": "Primary business model",
+    "marketOpportunity": "Description of the market opportunity size and timing",
+    "competitors": ["Competitor 1", "Competitor 2"],
+    "strengths": ["Strength 1", "Strength 2"],
+    "weaknesses": ["Weakness 1", "Weakness 2"],
+    "risks": ["Risk 1", "Risk 2"],
+    "monetization": ["Revenue stream 1", "Revenue stream 2"],
+    "productScope": "Key system scoping limits",
+    "mvpRecommendations": "Critical operational focus for initial product launch",
+    "technicalComplexity": "Estimated engineering level and challenges",
+    "growthPotential": "Estimated viral loops and growth scaling potential"
+  }
 }`
 
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
@@ -138,10 +244,13 @@ Return ONLY valid JSON matching this shape (no markdown):
   const contentText = data.candidates?.[0]?.content?.parts?.[0]?.text
   if (!contentText) throw new Error('Gemini API returned an empty response')
 
-  const result = JSON.parse(contentText.trim()) as AIEngineResponse
-  if (!result.validation || !result.prd || !result.roadmap?.length) {
-    throw new Error('Invalid JSON structure returned by Gemini')
+  const cleanText = contentText.trim()
+  const result = JSON.parse(cleanText) as AIEngineResponse
+  
+  if (!result.startupName || !result.executiveBriefing || !result.validationReport || !result.prd || !result.roadmap || !result.mvpStrategy) {
+    throw new Error('Invalid JSON structure returned by Gemini Flash')
   }
+
   return result
 }
 
@@ -156,12 +265,8 @@ export async function generateAIEngineResponse(input: string): Promise<AIEngineR
       console.error('Gemini API call failed, falling back to local engine:', error)
     }
   }
-
-  return {
-    validation: buildValidation(idea),
-    prd: buildPrd(idea),
-    roadmap: buildRoadmap(idea)
-  }
+  
+  return generateMockAIEngineResponse(idea)
 }
 
 export async function analyzeIdea(input: string): Promise<AIEngineResponse> {

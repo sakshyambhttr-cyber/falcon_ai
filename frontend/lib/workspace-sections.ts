@@ -2,11 +2,11 @@ import type { AIEngineResponse } from '../types/core'
 import type { AssetKey } from './asset-registry'
 
 export type WorkspaceNavSection =
-  | 'idea-overview'
-  | 'market-analysis'
+  | 'executive-briefing'
   | 'validation'
   | 'prd'
   | 'roadmap'
+  | 'mvp-strategy'
   | 'export'
 
 export type StreamSectionId = 'problem' | 'solution' | 'market-fit' | 'risks' | 'monetization'
@@ -40,7 +40,7 @@ export function buildStreamSections(
       id: 'solution',
       title: 'Solution',
       content: prd?.features?.length
-        ? `${prd.title} solves this through:\n${prd.features.map(f => `• ${f}`).join('\n')}`
+        ? `${response?.startupName || 'This solution'} solves this through:\n${prd.features.map(f => `• ${f}`).join('\n')}`
         : 'Solution architecture will appear as the PRD is synthesized.',
       visible: revealedCount >= 2
     },
@@ -77,10 +77,10 @@ export function buildStreamSections(
 }
 
 export const WORKSPACE_NAV: { id: WorkspaceNavSection; label: string; icon: AssetKey }[] = [
-  { id: 'idea-overview', label: 'Idea Overview', icon: 'ws-idea' },
-  { id: 'market-analysis', label: 'Market Analysis', icon: 'ws-market' },
+  { id: 'executive-briefing', label: 'Executive Briefing', icon: 'ws-idea' },
   { id: 'validation', label: 'Validation Report', icon: 'ws-validation' },
-  { id: 'prd', label: 'PRD Generator', icon: 'ws-prd' },
+  { id: 'prd', label: 'PRD', icon: 'ws-prd' },
   { id: 'roadmap', label: 'Roadmap', icon: 'ws-roadmap' },
+  { id: 'mvp-strategy', label: 'MVP Strategy', icon: 'ws-market' },
   { id: 'export', label: 'Export', icon: 'ws-export' }
 ]

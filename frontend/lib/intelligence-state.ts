@@ -8,6 +8,7 @@ import type {
   SessionMemory,
   ValidationReportData
 } from '../types/events'
+import type { AIEngineResponse } from '../types/core'
 
 export type IntelligenceUIState = {
   sessionId: string | null
@@ -94,27 +95,61 @@ export function reduceIntelligenceEvent(
   }
 }
 
-export function intelligenceToLegacyResponse(state: IntelligenceUIState) {
-  const v = state.memory.validation
+export function intelligenceToLegacyResponse(state: IntelligenceUIState): AIEngineResponse | null {
+  const final = state.memory.final
+  const validation = state.memory.validation
   const prdContent = state.memory.prd
-  if (!v) return null
+  const roadmapSteps = state.memory.roadmap
+
+  if (!validation || !final) return null
+
+  const p1 = roadmapSteps.find(r => r.phase === 1) || { title: 'Discovery & Core Validation', tasks: [] }
+  const p2 = roadmapSteps.find(r => r.phase === 2) || { title: 'MVP Development', tasks: [] }
+  const p3 = roadmapSteps.find(r => r.phase === 3) || { title: 'Beta Launch & Feedback', tasks: [] }
+  const p4 = roadmapSteps.find(r => r.phase === 4) || { title: 'Milestones & Timeline', tasks: [] }
 
   return {
-    validation: {
-      score: v.viability_score,
-      summary:
-        state.memory.analysis?.summary ||
-        v.opportunities?.join(' ') ||
-        'Validation complete'
+    startupName: final.startup_name_suggestion || 'Startup Product',
+    executiveBriefing: final.executive_briefing || '',
+    validationReport: {
+      marketPotential: validation.marketPotential || state.memory.market?.market_size || 'Clear market validation segment.',
+      opportunityScore: validation.viability_score || 80,
+      riskAssessment: validation.riskAssessment || 'Standard product CAC and execution velocity risks.',
+      strengths: validation.strengths || validation.opportunities || [],
+      weaknesses: validation.weaknesses || validation.risks || []
     },
     prd: {
-      title: state.memory.final?.startup_name_suggestion || 'Startup Product',
-      features: (prdContent.features || '').split('\n').filter(l => l.startsWith('•')).map(l => l.slice(2)),
-      userStories: (prdContent.users || '').split('\n').filter(l => l.startsWith('•')).map(l => l.slice(2))
+      overview: prdContent.overview || prdContent.solution || 'Product overview specifications.',
+      userStories: (prdContent.users || '').split('\n').filter(l => l.trim().startsWith('•')).map(l => l.trim().slice(2)),
+      features: (prdContent.features || '').split('\n').filter(l => l.trim().startsWith('•')).map(l => l.trim().slice(2)),
+      requirements: (prdContent.requirements || '').split('\n').filter(l => l.trim().startsWith('•')).map(l => l.trim().slice(2))
     },
-    roadmap: state.memory.roadmap.map(r => ({
-      phase: r.title,
-      tasks: r.tasks
-    }))
+    roadmap: {
+      phase1: { name: p1.title, tasks: p1.tasks },
+      phase2: { name: p2.title, tasks: p2.tasks },
+      phase3: { name: p3.title, tasks: p3.tasks },
+      milestones: p4.tasks
+    },
+    mvpStrategy: {
+      launchStrategy: final.mvp_launch_strategy || 'Visual MVP launch workflow.',
+      minimumFeatures: final.mvp_minimum_features || (prdContent.features || '').split('\n').filter(l => l.trim().startsWith('•')).map(l => l.trim().slice(2)).slice(0, 3),
+      firstUsers: final.mvp_first_users || 'Beta adopter developer lists.'
+    },
+    internalAnalysis: {
+      concept: state.memory.analysis?.summary || '',
+      targetAudience: state.memory.analysis?.category || 'Entrepreneurs',
+      painPoints: (prdContent.problem_statement || '').split('\n').filter(l => l.trim().startsWith('•')).map(l => l.trim().slice(2)),
+      businessModel: 'Freemium SaaS subscription',
+      marketOpportunity: 'High growth builder segment',
+      competitors: ['Incumbents'],
+      strengths: validation.strengths || [],
+      weaknesses: validation.weaknesses || [],
+      risks: validation.risks || [],
+      monetization: ['Premium plan'],
+      productScope: 'MVP visual tabs',
+      mvpRecommendations: 'Focus on immediate co-founder briefing',
+      technicalComplexity: 'Moderate Next.js structure',
+      growthPotential: 'High developer viral coefficient'
+    }
   }
 }

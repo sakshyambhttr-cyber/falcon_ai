@@ -5,13 +5,27 @@
 import { AIOrchestrator } from '../../../modules/orchestrator'
 import { sanitizeStartupIdea } from '../../../modules/ai-engine'
 import { getSessionStore } from '../../../modules/session-store'
+import { parseBody, ChatRouteSchema } from '../../../lib/validation'
+import { checkStrictRateLimit } from '../../../lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => ({}))
-  const idea = sanitizeStartupIdea(String(body?.idea || ''))
+  // Rate limit: strict (10 req / 60 s) — triggers full AI pipeline
+  const rateLimitResponse = await checkStrictRateLimit(request)
+  if (rateLimitResponse) return rateLimitResponse
+
+  const raw = await request.json().catch(() => ({}))
+  const parsed = parseBody(ChatRouteSchema, raw)
+  if (!parsed.success) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
+
+  const idea = sanitizeStartupIdea(parsed.data.idea)
   const orchestrator = new AIOrchestrator()
   const { sessionId } = orchestrator.startSession({ idea, userId: 'legacy-chat', mode: 'full' })
 
