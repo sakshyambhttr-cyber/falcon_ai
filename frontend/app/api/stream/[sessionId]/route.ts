@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server' // Ensure NextRequest is imported
 import { getSessionStore } from '../../../../modules/session-store'
 import { StreamingController } from '../../../../modules/orchestrator/streaming-controller'
 import type { FalconEvent } from '../../../../types/events'
@@ -5,11 +6,18 @@ import type { FalconEvent } from '../../../../types/events'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+// 1. Explicitly type out the props parameter object with a Promise
+type RouteProps = {
+  params: Promise<{ sessionId: string }>
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ sessionId: string }> } // 1. Wrapped in Promise
+  request: NextRequest, // 2. Use NextRequest as the standard first argument
+  props: RouteProps     // 3. Pass the explicitly typed Promise properties object
 ) {
-  const { sessionId } = await params // 2. Awaited the params object
+  // 4. Resolve the asynchronous params Promise using await
+  const { sessionId } = await props.params 
+  
   const store = getSessionStore()
   const session = store.get(sessionId)
 
