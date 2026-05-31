@@ -73,7 +73,7 @@ const FEATURES: Array<{
 
 export default function LandingPage() {
   const [activeFeature, setActiveFeature] = useState<FeatureId | null>(null)
-  const [activeEngagement, setActiveEngagement] = useState(ENGAGEMENT_ITEMS[0].id)
+  const [activeEngagement, setActiveEngagement] = useState<typeof ENGAGEMENT_ITEMS[number]['id']>(ENGAGEMENT_ITEMS[0].id)
 
   const engagementItem = ENGAGEMENT_ITEMS.find(item => item.id === activeEngagement) || ENGAGEMENT_ITEMS[0]
 
