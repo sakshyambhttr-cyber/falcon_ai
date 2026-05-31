@@ -1,15 +1,15 @@
 {
   "version": 1,
   "functions": {
-    "/api/ai": {},
-    "/api/feature/insight": {},
-    "/api/murf": {},
-    "/api/advisor/chat/stream": {},
-    "/api/chat": {},
-    "/api/research": {},
-    "/api/voice/synthesize": {},
-    "/api/advisor/chat": {},
     "/api/idea/submit": {},
-    "/api/stream/[sessionId]": {}
+    "/api/ai": {},
+    "/api/advisor/chat": {},
+    "/api/murf": {},
+    "/api/feature/insight": {},
+    "/api/research": {},
+    "/api/chat": {},
+    "/api/stream/[sessionId]": {},
+    "/api/advisor/chat/stream": {},
+    "/api/voice/synthesize": {}
   }
 }
