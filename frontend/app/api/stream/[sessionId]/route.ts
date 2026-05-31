@@ -7,9 +7,9 @@ export const runtime = 'nodejs'
 
 export async function GET(
   request: Request,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> } // 1. Wrapped in Promise
 ) {
-  const sessionId = params.sessionId
+  const { sessionId } = await params // 2. Awaited the params object
   const store = getSessionStore()
   const session = store.get(sessionId)
 
