@@ -50,7 +50,7 @@ export function isFirebaseConfigured(): boolean {
   const domain = firebaseConfig.authDomain
   const project = firebaseConfig.projectId
   if (!key || !domain || !project) return false
-  if (key.includes('your-') || key.includes('placeholder') || key.includes('xxx')) return false
+  if (key.includes('your-') || key.includes('placeholder')) return false
   return true
 }
 

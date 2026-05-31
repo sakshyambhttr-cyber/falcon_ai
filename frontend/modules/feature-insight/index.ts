@@ -30,7 +30,7 @@ const FEATURE_META: Record<
   }
 }
 
-const PLACEHOLDER_GEMINI_PREFIXES = ['AQ.Ab8RN6K4xxx', 'your-gemini-key', 'changeme']
+const PLACEHOLDER_GEMINI_PREFIXES = ['your-gemini-key', 'changeme', 'placeholder', 'insert-key']
 
 function isPlaceholderApiKey(key: string | undefined): boolean {
   if (!key || key.length < 8) return true

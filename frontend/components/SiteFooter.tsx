@@ -15,9 +15,10 @@ export default function SiteFooter() {
         © {YEAR} {APP_NAME}. Built by Saksyam Bhattarai.
       </p>
       <nav className="ff-site-footer-links" aria-label="Footer navigation">
+        <Link href="/about" className="ff-site-footer-link">About</Link>
+        <Link href="/contact" className="ff-site-footer-link">Contact</Link>
         <Link href="/privacy" className="ff-site-footer-link">Privacy</Link>
         <Link href="/terms" className="ff-site-footer-link">Terms</Link>
-        <Link href="/contact" className="ff-site-footer-link">Contact</Link>
         {GITHUB_URL && (
           <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="ff-site-footer-link">
             GitHub

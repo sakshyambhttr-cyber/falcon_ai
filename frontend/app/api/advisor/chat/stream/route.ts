@@ -48,7 +48,7 @@ type StreamChatRequest = z.infer<typeof StreamChatSchema>
 function isPlaceholderKey(key: string | undefined): boolean {
   if (!key || key.length < 8) return true
   const n = key.trim().toLowerCase()
-  return ['aq.ab8rn6k4xxx', 'your-gemini-key', 'changeme'].some(p => n.startsWith(p))
+  return ['your-gemini-key', 'changeme', 'placeholder', 'insert-key'].some(p => n.startsWith(p))
 }
 
 function buildFallbackAnswer(question: string, ctx: StreamChatRequest['context']): string {

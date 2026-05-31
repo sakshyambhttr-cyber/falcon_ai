@@ -1,7 +1,7 @@
 import type { AIEngineResponse, AIPRD, AIRoadmapItem, AIValidation } from '../../types/core'
 
 const MAX_IDEA_LENGTH = 4000
-const PLACEHOLDER_GEMINI_PREFIXES = ['AQ.Ab8RN6K4xxx', 'your-gemini-key', 'changeme']
+const PLACEHOLDER_GEMINI_PREFIXES = ['your-gemini-key', 'changeme', 'placeholder', 'insert-key']
 
 function normalizeIdea(input: string): string {
   return input.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, MAX_IDEA_LENGTH)

@@ -94,11 +94,25 @@ export default function TopBar({ onHomeNavigate }: TopBarProps) {
           <Link
             href="/"
             className={`ff-topbar-glass ff-topbar-nav-pill ff-topbar-page-link${pathname === '/' ? ' active' : ''}`}
-            aria-label={`Go to ${title}`}
+            aria-label="Home"
             aria-current={pathname === '/' ? 'page' : undefined}
             onClick={handleHomeClick}
           >
-            <span className="ff-topbar-page">{title}</span>
+            <span className="ff-topbar-page">Home</span>
+          </Link>
+          <Link
+            href="/about"
+            className={`ff-topbar-glass ff-topbar-nav-pill ff-topbar-page-link${pathname.startsWith('/about') ? ' active' : ''}`}
+            aria-current={pathname.startsWith('/about') ? 'page' : undefined}
+          >
+            <span className="ff-topbar-page">About</span>
+          </Link>
+          <Link
+            href="/contact"
+            className={`ff-topbar-glass ff-topbar-nav-pill ff-topbar-page-link${pathname.startsWith('/contact') ? ' active' : ''}`}
+            aria-current={pathname.startsWith('/contact') ? 'page' : undefined}
+          >
+            <span className="ff-topbar-page">Contact</span>
           </Link>
           <Link
             href="/workspace"
