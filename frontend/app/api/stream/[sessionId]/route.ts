@@ -6,15 +6,11 @@ import type { FalconEvent } from '../../../../types/events'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-type RouteProps = {
-  params: Promise<{ sessionId: string }>
-}
-
 export async function GET(
   request: NextRequest,
-  props: RouteProps
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
-  const { sessionId } = await props.params
+  const { sessionId } = await params
 
   const store = getSessionStore()
   const session = store.get(sessionId)
