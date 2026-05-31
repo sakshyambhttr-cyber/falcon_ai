@@ -1,0 +1,21 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/research/route": "/api/research",
+  "/api/ai/route": "/api/ai",
+  "/api/murf/route": "/api/murf",
+  "/api/feature/insight/route": "/api/feature/insight",
+  "/api/advisor/chat/route": "/api/advisor/chat",
+  "/api/chat/route": "/api/chat",
+  "/api/idea/submit/route": "/api/idea/submit",
+  "/api/stream/[sessionId]/route": "/api/stream/[sessionId]",
+  "/api/voice/synthesize/route": "/api/voice/synthesize",
+  "/api/advisor/chat/stream/route": "/api/advisor/chat/stream",
+  "/about/page": "/about",
+  "/contact/page": "/contact",
+  "/demo/page": "/demo",
+  "/page": "/",
+  "/landing/page": "/landing",
+  "/workspace/page": "/workspace",
+  "/privacy/page": "/privacy",
+  "/terms/page": "/terms"
+}
