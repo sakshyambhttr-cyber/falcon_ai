@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — WORKSPACE SCREEN
+ * FOUNDER FALCON — WORKSPACE SCREEN
  *
  * Phase 9: Streaming responses — advisor text streams token-by-token via SSE
  * Phase 10: Workspace integration — chat commands mutate workspace documents live
@@ -418,10 +418,10 @@ export default function WorkspaceScreen() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    const safeTitle =
+        const safeTitle =
       intelligence.memory.final?.startup_name_suggestion
         ?.toLowerCase().replace(/[^a-z0-9]+/g, '-') ?? 'startup'
-    link.download = `murf-falcon-${safeTitle}-pack.md`
+    link.download = `founder-falcon-${safeTitle}-pack.md`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -451,8 +451,8 @@ export default function WorkspaceScreen() {
         )}
 
         {inAnalysisMode && (
-          <header className="ff-workspace-toolbar">
-            <span className="ff-workspace-eyebrow">Murf Falcon · Intelligence Pipeline</span>
+              <header className="ff-workspace-toolbar">
+                <span className="ff-workspace-eyebrow">Founder Falcon · Intelligence Pipeline</span>
             <div className="ff-workspace-topbar-actions">
               <button
                 type="button"

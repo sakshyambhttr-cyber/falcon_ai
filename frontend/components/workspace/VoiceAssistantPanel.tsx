@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — VOICE ASSISTANT PANEL
+ * FOUNDER FALCON — VOICE ASSISTANT PANEL
  *
  * Phase 6: Full voice conversation mode — speak → Gemini → voice response → auto-listen loop
  * Phase 8: Live feedback states — Listening / Thinking / Analyzing / Preparing Briefing / Speaking

@@ -6,7 +6,7 @@ export default function PrivacyPage() {
       <div className="ff-page-inner">
         <h1>Privacy Policy</h1>
         <p className="ff-section-subtitle">
-          Murf Falcon respects your privacy. Startup ideas submitted through the workspace are processed
+          Founder Falcon respects your privacy. Startup ideas submitted through the workspace are processed
           to generate intelligence outputs and are not sold to third parties.
         </p>
         <p>

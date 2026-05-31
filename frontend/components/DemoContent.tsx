@@ -19,7 +19,7 @@ export default function DemoContent() {
             <AssetImage asset="nav-demo" size={24} alt="" />
           </span>
           <div>
-            <h1>See Murf Falcon in Action</h1>
+            <h1>See Founder Falcon in Action</h1>
             <p>Watch validation, PRD, and roadmap generation stream live in the workspace.</p>
           </div>
         </header>
@@ -28,7 +28,7 @@ export default function DemoContent() {
           <div className="ff-demo-video-wrap ff-demo-video-wrap-flow">
             <iframe
               src={`https://www.youtube.com/embed/${DEMO_VIDEO_ID}?rel=0`}
-              title="Murf Falcon Demo"
+              title="Founder Falcon Demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />

@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — IDEA CAPTURE
+ * FOUNDER FALCON — IDEA CAPTURE
  *
  * Two input modes:
  *   "voice" — big mic button, live transcript preview
@@ -130,7 +130,7 @@ export default function IdeaCapture({
       <Card className="ff-idea-hero">
         <div className="ff-idea-hero-top">
           <span className="ff-logo-mark-wrap ff-idea-logo">
-            <AssetImage asset="logo" size={22} alt="Murf Falcon" brand />
+            <AssetImage asset="logo" size={22} alt="Founder Falcon" brand />
           </span>
           <div>
             <h1>Your AI Co-Founder</h1>

@@ -34,7 +34,7 @@ const CAPABILITIES: { title: string; body: string; icon: AssetKey }[] = [
   },
   {
     title: 'Voice Integration',
-    body: 'Murf-powered summaries with live waveform playback.',
+    body: 'Founder Falcon-powered summaries with live waveform playback.',
     icon: 'waveform'
   }
 ]
@@ -49,15 +49,15 @@ export default function AboutContent() {
             <AssetImage asset="nav-about" size={24} alt="" />
           </span>
           <div>
-            <h1>About Murf Falcon</h1>
+            <h1>About Founder Falcon</h1>
             <p>The AI Startup Operating System for builders who move at founder speed.</p>
           </div>
         </header>
 
         <Card className="ff-page-intro-card">
-          <h2>What is Murf Falcon?</h2>
+          <h2>What is Founder Falcon?</h2>
           <p>
-            Murf Falcon is a voice-first AI co-founder that transforms a single startup idea into a
+            Founder Falcon is a voice-first AI co-founder that transforms a single startup idea into a
             complete operating package — validation, PRD, technical specs, roadmap, and pitch
             materials — streamed live inside a premium workspace.
           </p>

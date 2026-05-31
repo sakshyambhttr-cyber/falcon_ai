@@ -111,7 +111,7 @@ export default function ContactForm() {
               rows={3}
               value={values.message}
               onChange={e => setValues(v => ({ ...v, message: e.target.value }))}
-              placeholder="Tell us how Murf Falcon can help…"
+              placeholder="Tell us how Founder Falcon can help…"
             />
             {errors.message && <em>{errors.message}</em>}
           </label>

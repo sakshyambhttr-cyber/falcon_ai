@@ -1,5 +1,5 @@
 /**
- * Murf Falcon asset registry — SVG first, PNG fallback.
+ * Founder Falcon asset registry — SVG first, PNG fallback.
  * Scan paths: /public/assets/, /public/images/
  */
 

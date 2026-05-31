@@ -6,7 +6,7 @@ export default function TermsPage() {
       <div className="ff-page-inner">
         <h1>Terms of Service</h1>
         <p className="ff-section-subtitle">
-          Murf Falcon provides AI-generated startup intelligence for informational purposes. Outputs
+          Founder Falcon provides AI-generated startup intelligence for informational purposes. Outputs
           should be validated before business or investment decisions.
         </p>
         <p>
