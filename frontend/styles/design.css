@@ -5095,6 +5095,30 @@ body.ff-nav-menu-open {
     line-height: var(--line-snug);
   }
 
+  /* Prevent feature cards from collapsing on small screens */
+  .ff-idea-features {
+    grid-template-columns: 1fr !important;
+    gap: var(--sp-3);
+  }
+
+  .ff-idea-features .ff-card {
+    padding: var(--sp-3) !important;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    min-height: 0;
+  }
+
+  .ff-idea-features .ff-icon-box {
+    flex-shrink: 0;
+  }
+
+  .ff-idea-features strong,
+  .ff-idea-features span {
+    display: block;
+    width: 100%;
+    white-space: normal;
+  }
+
   .ff-score-ring {
     align-self: flex-start;
   }
