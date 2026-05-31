@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server'
 import { getSessionStore } from '../../../../modules/session-store'
 import { StreamingController } from '../../../../modules/orchestrator/streaming-controller'
 import type { FalconEvent } from '../../../../types/events'
@@ -5,11 +6,16 @@ import type { FalconEvent } from '../../../../types/events'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+type RouteProps = {
+  params: Promise<{ sessionId: string }>
+}
+
 export async function GET(
-  request: Request,
-  { params }: { params: { sessionId: string } }
+  request: NextRequest,
+  props: RouteProps
 ) {
-  const sessionId = params.sessionId
+  const { sessionId } = await props.params
+
   const store = getSessionStore()
   const session = store.get(sessionId)
 
