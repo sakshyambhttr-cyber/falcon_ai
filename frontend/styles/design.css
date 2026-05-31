@@ -6416,9 +6416,13 @@ details.ff-voice-history[open] .ff-voice-history-summary::before {
   background-clip: text;
 }
 
-/* ── Phase 11: TopBar nav — hide About/Contact on workspace page ── */
+/* ── Phase 11: TopBar nav — hide About/Contact on workspace page (keep profile visible) ── */
 .ff-workspace-shell .ff-topbar-center .ff-topbar-page-link:not(.ff-topbar-badge-link) {
   display: none;
+}
+/* Never hide the auth group on workspace */
+.ff-workspace-shell .ff-topbar-auth-group {
+  display: flex !important;
 }
 
 /* ── Phase 11: Workspace toolbar — tighter on mobile ── */
@@ -6565,4 +6569,19 @@ details.ff-voice-history[open] .ff-voice-history-summary::before {
     height: 36px;
     justify-content: center;
   }
+}
+
+
+/* ── TopBar auth skeleton (shown while Firebase resolves) ── */
+.ff-topbar-profile-skeleton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  animation: ff-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ff-skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
 }

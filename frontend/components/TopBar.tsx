@@ -125,69 +125,68 @@ export default function TopBar({ onHomeNavigate }: TopBarProps) {
         </nav>
 
         <div className="ff-topbar-actions">
-          {/* Profile / auth — always visible on all pages */}
-          {!isLoading && (
-            <div className="ff-topbar-auth-group">
-              {isAuthenticated && user ? (
-                <>
-                  {/* Profile dropdown trigger — visible everywhere */}
-                  <div className="ff-topbar-profile-wrap">
-                    <button
-                      type="button"
-                      className="ff-topbar-profile-btn"
-                      aria-label={`Signed in as ${user.displayName || user.email}`}
-                      title={user.displayName || user.email || 'Your account'}
-                      onClick={handleSignOut}
-                    >
-                      {user.photoURL ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={user.photoURL}
-                          alt={user.displayName || 'Profile'}
-                          className="ff-topbar-profile-photo"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <span className="ff-user-avatar" aria-hidden="true">
-                          {userInitial}
-                        </span>
-                      )}
-                      <span className="ff-topbar-profile-name">
-                        {user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'Account'}
-                      </span>
-                    </button>
-                  </div>
-                  {/* Workspace CTA — only on non-workspace pages */}
-                  {!isWorkspace && (
-                    <Link href="/workspace" className="ff-topbar-cta-link">
-                      <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
-                        Workspace
-                      </Button>
-                    </Link>
+          {/* Profile / auth — always rendered, skeleton during loading */}
+          <div className="ff-topbar-auth-group">
+            {isLoading ? (
+              /* Skeleton placeholder while Firebase resolves */
+              <div className="ff-topbar-profile-skeleton" aria-hidden="true" />
+            ) : isAuthenticated && user ? (
+              <>
+                {/* Profile button — visible on ALL pages after login */}
+                <button
+                  type="button"
+                  className="ff-topbar-profile-btn"
+                  aria-label={`Signed in as ${user.displayName || user.email}. Click to sign out.`}
+                  title={`${user.displayName || user.email} — click to sign out`}
+                  onClick={handleSignOut}
+                >
+                  {user.photoURL ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || 'Profile'}
+                      className="ff-topbar-profile-photo"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="ff-user-avatar" aria-hidden="true">
+                      {userInitial}
+                    </span>
                   )}
-                </>
-              ) : (
-                /* Not signed in — only show on non-workspace pages */
-                !isWorkspace && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      className="ff-topbar-signin ff-topbar-glass ff-topbar-glass-signin"
-                      onClick={() => setSignInOpen(true)}
-                      aria-label="Sign in to your account"
-                    >
-                      Sign in
+                  <span className="ff-topbar-profile-name">
+                    {user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'Account'}
+                  </span>
+                </button>
+                {/* Workspace CTA — only on non-workspace pages */}
+                {!isWorkspace && (
+                  <Link href="/workspace" className="ff-topbar-cta-link">
+                    <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
+                      Workspace
                     </Button>
-                    <Link href="/workspace" className="ff-topbar-cta-link">
-                      <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
-                        Try AI
-                      </Button>
-                    </Link>
-                  </>
-                )
-              )}
-            </div>
-          )}
+                  </Link>
+                )}
+              </>
+            ) : (
+              /* Not signed in — only show on non-workspace pages */
+              !isWorkspace && (
+                <>
+                  <Button
+                    variant="ghost"
+                    className="ff-topbar-signin ff-topbar-glass ff-topbar-glass-signin"
+                    onClick={() => setSignInOpen(true)}
+                    aria-label="Sign in to your account"
+                  >
+                    Sign in
+                  </Button>
+                  <Link href="/workspace" className="ff-topbar-cta-link">
+                    <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
+                      Try AI
+                    </Button>
+                  </Link>
+                </>
+              )
+            )}
+          </div>
 
           <button
             type="button"
