@@ -6487,3 +6487,82 @@ details.ff-voice-history[open] .ff-voice-history-summary::before {
     overflow: hidden;
   }
 }
+
+
+/* ============================================================
+   TOPBAR PROFILE BUTTON — always visible after login
+   ============================================================ */
+
+.ff-topbar-profile-wrap {
+  position: relative;
+}
+
+.ff-topbar-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 4px 10px 4px 4px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+.ff-topbar-profile-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(0, 212, 245, 0.25);
+}
+
+/* Google profile photo */
+.ff-topbar-profile-photo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Fallback initial avatar */
+.ff-topbar-profile-btn .ff-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+  color: var(--text-on-accent);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ff-topbar-profile-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* Hide name on small screens — just show avatar */
+@media (max-width: 640px) {
+  .ff-topbar-profile-name {
+    display: none;
+  }
+
+  .ff-topbar-profile-btn {
+    padding: 4px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+  }
+}

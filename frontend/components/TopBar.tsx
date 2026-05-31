@@ -125,44 +125,66 @@ export default function TopBar({ onHomeNavigate }: TopBarProps) {
         </nav>
 
         <div className="ff-topbar-actions">
-          {!isWorkspace && !isLoading && (
+          {/* Profile / auth — always visible on all pages */}
+          {!isLoading && (
             <div className="ff-topbar-auth-group">
               {isAuthenticated && user ? (
                 <>
-                  <button
-                    type="button"
-                    className="ff-topbar-signin ff-btn ff-btn-ghost ff-topbar-glass ff-topbar-glass-signin ff-topbar-user-btn"
-                    onClick={handleSignOut}
-                    aria-label={`Sign out ${user.displayName || user.email}`}
-                    title={user.displayName || user.email || 'Signed in'}
-                  >
-                    <span className="ff-user-avatar" aria-hidden="true">
-                      {userInitial}
-                    </span>
-                    <span className="ff-topbar-btn-label">Sign out</span>
-                  </button>
-                  <Link href="/workspace" className="ff-topbar-cta-link">
-                    <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
-                      Workspace
-                    </Button>
-                  </Link>
+                  {/* Profile dropdown trigger — visible everywhere */}
+                  <div className="ff-topbar-profile-wrap">
+                    <button
+                      type="button"
+                      className="ff-topbar-profile-btn"
+                      aria-label={`Signed in as ${user.displayName || user.email}`}
+                      title={user.displayName || user.email || 'Your account'}
+                      onClick={handleSignOut}
+                    >
+                      {user.photoURL ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={user.photoURL}
+                          alt={user.displayName || 'Profile'}
+                          className="ff-topbar-profile-photo"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span className="ff-user-avatar" aria-hidden="true">
+                          {userInitial}
+                        </span>
+                      )}
+                      <span className="ff-topbar-profile-name">
+                        {user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'Account'}
+                      </span>
+                    </button>
+                  </div>
+                  {/* Workspace CTA — only on non-workspace pages */}
+                  {!isWorkspace && (
+                    <Link href="/workspace" className="ff-topbar-cta-link">
+                      <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
+                        Workspace
+                      </Button>
+                    </Link>
+                  )}
                 </>
               ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="ff-topbar-signin ff-topbar-glass ff-topbar-glass-signin"
-                    onClick={() => setSignInOpen(true)}
-                    aria-label="Sign in to your account"
-                  >
-                    Sign in
-                  </Button>
-                  <Link href="/workspace" className="ff-topbar-cta-link">
-                    <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
-                      Try AI
+                /* Not signed in — only show on non-workspace pages */
+                !isWorkspace && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      className="ff-topbar-signin ff-topbar-glass ff-topbar-glass-signin"
+                      onClick={() => setSignInOpen(true)}
+                      aria-label="Sign in to your account"
+                    >
+                      Sign in
                     </Button>
-                  </Link>
-                </>
+                    <Link href="/workspace" className="ff-topbar-cta-link">
+                      <Button variant="primary" className="ff-topbar-cta ff-topbar-glass ff-topbar-glass-cta">
+                        Try AI
+                      </Button>
+                    </Link>
+                  </>
+                )
               )}
             </div>
           )}
