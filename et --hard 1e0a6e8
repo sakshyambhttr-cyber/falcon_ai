@@ -1,0 +1,14 @@
+[33m907cc4a[m[33m ([m[1;36mHEAD[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: rebase (start): checkout origin/main
+[33m1e0a6e8[m[33m ([m[1;32mmain[m[33m)[m HEAD@{1}: reset: moving to HEAD
+[33m1e0a6e8[m[33m ([m[1;32mmain[m[33m)[m HEAD@{2}: commit: chore: prepare repo and add CSP, firebase logging, deploy docs, env example
+[33md4b3ec8[m HEAD@{3}: Branch: renamed refs/heads/cursor/ai-stream-types-55194 to refs/heads/main
+[33md4b3ec8[m HEAD@{5}: commit: Initial commit
+[33md00d9ef[m HEAD@{6}: commit: Refactor build and manifest files for improved structure and consistency. Removed obsolete entries and updated paths to streamline the application build process.
+[33m24c8b7c[m HEAD@{7}: checkout: moving from main to cursor/ai-stream-types-55194
+[33m24c8b7c[m HEAD@{8}: commit: commi3
+[33ma9c78f2[m HEAD@{9}: commit: upgrading
+[33m19c42c9[m HEAD@{10}: commit: Update project files and features
+[33m2efef18[m HEAD@{11}: commit: Update project files and features
+[33ma9e5de4[m HEAD@{12}: commit: Update project files and features
+[33m8e6b9b5[m HEAD@{13}: Branch: renamed refs/heads/master to refs/heads/main
+[33m8e6b9b5[m HEAD@{15}: commit (initial): Initial commit

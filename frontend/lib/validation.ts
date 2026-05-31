@@ -74,7 +74,7 @@ export const MurfRouteSchema = z.object({
     .string()
     .max(64)
     .optional()
-    .default('en-US-natalie'),
+    .default('en-US-amara'),
 })
 
 export type MurfRouteInput = z.infer<typeof MurfRouteSchema>

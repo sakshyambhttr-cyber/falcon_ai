@@ -82,7 +82,7 @@ function setCache(key: string, url: string): void {
 
 export async function generateMurfSpeech(
   text: string,
-  voiceId = 'en-US-natalie',
+  voiceId = 'en-US-amara',
   options?: { style?: string; locale?: string }
 ): Promise<MurfSpeechResponse> {
   const apiKey = process.env.MURF_API_KEY
@@ -93,7 +93,7 @@ export async function generateMurfSpeech(
     }
   }
 
-  const style = options?.style ?? 'Conversational'
+  const style = options?.style ?? 'Narration'
   const cacheKey = getCacheKey(text, voiceId, style)
   const cached = getCached(cacheKey)
   if (cached) {

@@ -12,17 +12,17 @@ import { signOut } from '../lib/firebase'
 
 const PAGE_TITLES: Record<string, string> = {
   '/':          'Home',
-  '/about':     'About Falcon',
+  '/about':     'About Us',
   '/demo':      'Demo',
-  '/contact':   'Contact',
+  '/contact':   'Contact Us',
   '/workspace': 'AI Workspace'
 }
 
-const MOBILE_LINKS = [
+const NAV_LINKS = [
   { href: '/', label: 'Home', match: (p: string) => p === '/' },
-  { href: '/about', label: 'About', match: (p: string) => p.startsWith('/about') },
+  { href: '/about', label: 'About Us', match: (p: string) => p.startsWith('/about') },
+  { href: '/contact', label: 'Contact Us', match: (p: string) => p.startsWith('/contact') },
   { href: '/demo', label: 'Demo', match: (p: string) => p.startsWith('/demo') },
-  { href: '/contact', label: 'Contact', match: (p: string) => p.startsWith('/contact') },
   { href: '/workspace', label: 'Workspace', match: (p: string) => p.startsWith('/workspace') }
 ] as const
 
@@ -91,15 +91,23 @@ export default function TopBar({ onHomeNavigate }: TopBarProps) {
         </div>
 
         <nav className="ff-topbar-center" aria-label="Main navigation">
-          <Link
-            href="/"
-            className={`ff-topbar-glass ff-topbar-nav-pill ff-topbar-page-link${pathname === '/' ? ' active' : ''}`}
-            aria-label={`Go to ${title}`}
-            aria-current={pathname === '/' ? 'page' : undefined}
-            onClick={handleHomeClick}
-          >
-            <span className="ff-topbar-page">{title}</span>
-          </Link>
+          {NAV_LINKS.slice(0, 3).map(link => {
+            const active = link.match(pathname)
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`ff-topbar-glass ff-topbar-nav-pill ff-topbar-page-link${active ? ' active' : ''}`}
+                aria-label={`Go to ${link.label}`}
+                aria-current={active ? 'page' : undefined}
+                onClick={() => {
+                  if (link.href === '/' && pathname === '/') handleHomeClick()
+                }}
+              >
+                <span className="ff-topbar-page">{link.label}</span>
+              </Link>
+            )
+          })}
           <Link
             href="/workspace"
             className={`ff-topbar-glass ff-topbar-nav-pill ff-topbar-nav-pill-accent ff-topbar-badge-link${isWorkspace ? ' active' : ''}`}
@@ -217,7 +225,7 @@ export default function TopBar({ onHomeNavigate }: TopBarProps) {
 
             <div className="ff-mobile-nav-section">
               <span className="ff-mobile-nav-heading">Navigate</span>
-              {MOBILE_LINKS.map(link => {
+              {NAV_LINKS.map(link => {
                 const active = link.match(pathname)
                 return (
                   <Link

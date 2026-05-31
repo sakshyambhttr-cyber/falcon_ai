@@ -281,7 +281,7 @@ export default function VoiceAssistantPanel({
       {/* ── Header ── */}
       <div className="ff-voice-panel-header">
         <span className="ff-icon-box ff-feature-icon">
-          <AssetImage asset="waveform" size={22} alt="" />
+          <AssetImage asset="waveform" size={18} alt="" className="ff-voice-advisor-icon" />
         </span>
         <div>
           <strong>Falcon Voice Advisor</strong>
