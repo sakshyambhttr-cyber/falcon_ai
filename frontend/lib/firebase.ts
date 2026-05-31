@@ -14,6 +14,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -83,20 +85,38 @@ const googleProvider = new GoogleAuthProvider()
 googleProvider.addScope('email')
 googleProvider.addScope('profile')
 
+/**
+ * Sign in with Google.
+ * Tries popup first (better UX). If the popup is blocked or fails with
+ * auth/popup-blocked / auth/popup-closed-by-user, falls back to redirect.
+ * On localhost, popups are sometimes blocked — redirect is more reliable.
+ */
 export async function signInWithGoogle(): Promise<User> {
   if (!auth) throw new Error('Firebase is not configured. Add NEXT_PUBLIC_FIREBASE_* to .env.local')
   try {
     const result = await signInWithPopup(auth, googleProvider)
     return result.user
-  } catch (err: any) {
-    // Log the full error object for debugging (includes code/message/ctx)
+  } catch (err: unknown) {
+    const code = (err as { code?: string })?.code ?? ''
+    const message = (err as Error)?.message ?? 'Unknown Firebase error during Google sign-in'
+
+    // Log full error for debugging
     console.error('[Firebase] signInWithGoogle failed:', err)
-    // Re-throw a cleaned-up error so UI can show the SDK message but logs keep full details
-    const message = err?.message || 'Unknown Firebase error during Google sign-in'
-    const code = err?.code || 'auth/internal-error'
+
+    // Popup blocked or closed — fall back to redirect flow
+    if (
+      code === 'auth/popup-blocked' ||
+      code === 'auth/popup-closed-by-user' ||
+      code === 'auth/cancelled-popup-request'
+    ) {
+      // signInWithRedirect navigates away and back — result handled by getRedirectResult
+      await signInWithRedirect(auth, googleProvider)
+      // This line is never reached (page navigates away)
+      throw new Error('Redirecting to Google sign-in…')
+    }
+
     const e = new Error(`${message} (${code})`)
-    // attach original for deeper inspection in dev
-    ;(e as any).original = err
+    ;(e as { original?: unknown }).original = err
     throw e
   }
 }
@@ -130,6 +150,22 @@ export async function signOut(): Promise<void> {
 }
 
 // ─── AUTH STATE LISTENER ──────────────────────────────────────────────────────
+
+/**
+ * Call this once on app mount to pick up the result of a redirect sign-in.
+ * Returns the signed-in user if the page just came back from a Google redirect,
+ * or null if there was no pending redirect.
+ */
+export async function handleRedirectResult(): Promise<User | null> {
+  if (!auth) return null
+  try {
+    const result = await getRedirectResult(auth)
+    return result?.user ?? null
+  } catch (err) {
+    console.error('[Firebase] getRedirectResult failed:', err)
+    return null
+  }
+}
 
 export function onAuthChange(callback: (user: User | null) => void): () => void {
   if (!auth) {

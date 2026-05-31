@@ -42,8 +42,16 @@ function formatAuthError(err: unknown): string {
   if (msg.includes('weak-password')) return 'Password must be at least 6 characters.'
   if (msg.includes('invalid-email')) return 'Please enter a valid email address.'
   if (msg.includes('popup-closed-by-user') || msg.includes('cancelled-popup-request')) return 'Sign-in was cancelled.'
+  if (msg.includes('popup-blocked')) return 'Popup was blocked — trying redirect sign-in instead.'
+  if (msg.includes('unauthorized-domain')) {
+    return 'This domain is not authorized in Firebase. Go to Firebase Console → Authentication → Settings → Authorized domains and add "localhost".'
+  }
+  if (msg.includes('operation-not-allowed')) {
+    return 'Google sign-in is not enabled. Go to Firebase Console → Authentication → Sign-in method and enable Google.'
+  }
   if (msg.includes('network-request-failed')) return 'Network error. Please check your connection.'
   if (msg.includes('too-many-requests')) return 'Too many attempts. Please wait a moment and try again.'
+  if (msg.includes('Redirecting to Google')) return 'Redirecting to Google sign-in…'
   return msg
 }
 

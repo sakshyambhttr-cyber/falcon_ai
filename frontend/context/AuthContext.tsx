@@ -19,7 +19,7 @@ import React, {
   useState,
   type ReactNode
 } from 'react'
-import { onAuthChange, isFirebaseConfigured, type User } from '../lib/firebase'
+import { onAuthChange, isFirebaseConfigured, handleRedirectResult, type User } from '../lib/firebase'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
@@ -58,10 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!firebaseReady) {
-      // Firebase not configured — skip loading state entirely
       setStatus('unauthenticated')
       return
     }
+
+    // Handle redirect result first (for Google sign-in redirect flow on localhost)
+    void handleRedirectResult()
 
     const unsubscribe = onAuthChange((firebaseUser) => {
       setUser(firebaseUser)
