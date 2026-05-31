@@ -6169,3 +6169,252 @@ body.ff-nav-menu-open {
     padding: var(--sp-2) var(--sp-4);
   }
 }
+
+
+/* ============================================================
+   PHASE 11 — MOBILE EXPERIENCE
+   PHASE 12 — FINAL EXPERIENCE
+   ============================================================ */
+
+/* ── Phase 11: Mobile tab state indicators ── */
+.ff-ws-tab-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+.ff-ws-tab-dot--ready      { background: var(--success); }
+.ff-ws-tab-dot--listening  { background: var(--neon-cyan); animation: ff-status-pulse 1s ease-in-out infinite; }
+.ff-ws-tab-dot--thinking   { background: var(--warning);  animation: ff-status-pulse 0.7s ease-in-out infinite; }
+.ff-ws-tab-dot--preparing  { background: #a78bfa;         animation: ff-status-pulse 0.6s ease-in-out infinite; }
+.ff-ws-tab-dot--speaking   { background: var(--neon-cyan); animation: ff-status-pulse 0.5s ease-in-out infinite; }
+
+.ff-ws-tab-btn--voice-active {
+  color: var(--neon-cyan) !important;
+  border-color: rgba(0, 212, 245, 0.3) !important;
+  background: rgba(0, 212, 245, 0.06) !important;
+}
+
+/* ── Phase 11: Floating voice button (mobile only) ── */
+.ff-ws-float-voice-btn {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .ff-ws-float-voice-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    position: fixed;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px) + var(--sp-3));
+    right: var(--sp-4);
+    z-index: 200;
+    background: var(--bg-elevated);
+    border: 1px solid rgba(0, 212, 245, 0.4);
+    border-radius: var(--radius-pill);
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--neon-cyan);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(0, 212, 245, 0.15);
+    cursor: pointer;
+    animation: ff-toast-in 0.2s ease-out;
+  }
+
+  .ff-ws-float-voice-btn--speaking {
+    border-color: rgba(0, 240, 232, 0.5);
+    background: rgba(0, 240, 232, 0.08);
+  }
+  .ff-ws-float-voice-btn--listening {
+    border-color: rgba(0, 229, 160, 0.5);
+    color: var(--success);
+    background: rgba(0, 229, 160, 0.08);
+  }
+  .ff-ws-float-voice-btn--thinking {
+    border-color: rgba(245, 200, 66, 0.4);
+    color: var(--warning);
+    background: rgba(245, 200, 66, 0.06);
+  }
+
+  .ff-ws-float-voice-label {
+    font-size: var(--text-xs);
+  }
+}
+
+/* ── Phase 11: Safe-area padding for iPhone home bar ── */
+@media (max-width: 767px) {
+  .ff-workspace-shell {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .ff-bottom-nav {
+    padding-bottom: max(var(--sp-2), env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Prevent content hiding behind bottom nav */
+  .ff-workspace-page {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Voice panel needs extra bottom space on mobile */
+  .ff-ws-panel[data-panel='voice'] .ff-panel-body {
+    padding-bottom: calc(var(--sp-5) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Follow-up input — larger touch targets */
+  .ff-voice-followup-input {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    min-height: 44px;
+  }
+
+  .ff-voice-followup-mic,
+  .ff-voice-followup-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Conversation mode block — full width on mobile */
+  .ff-voice-convo-mode {
+    margin-top: var(--sp-3);
+  }
+}
+
+/* ── Phase 12: Conversation history in voice panel ── */
+.ff-voice-history {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--sp-2);
+}
+
+.ff-voice-history-summary {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: var(--panel);
+}
+
+.ff-voice-history-summary::-webkit-details-marker { display: none; }
+
+.ff-voice-history-summary::before {
+  content: '▸';
+  font-size: 10px;
+  transition: transform 0.15s;
+}
+
+details.ff-voice-history[open] .ff-voice-history-summary::before {
+  transform: rotate(90deg);
+}
+
+.ff-voice-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--bg-inset);
+}
+
+.ff-voice-history-list::-webkit-scrollbar { width: 3px; }
+.ff-voice-history-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 245, 0.15);
+  border-radius: 2px;
+}
+
+.ff-voice-history-turn {
+  padding: var(--sp-2) var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ff-voice-history-turn--user {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ff-voice-history-turn--advisor {
+  background: rgba(0, 212, 245, 0.03);
+  border-left: 2px solid rgba(0, 212, 245, 0.2);
+}
+
+.ff-voice-history-role {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ff-voice-history-turn--advisor .ff-voice-history-role {
+  color: var(--neon-blue);
+}
+
+.ff-voice-history-text {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Phase 12: "Falcon is ready" banner after pipeline completes ── */
+.ff-ws-ready-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: rgba(0, 229, 160, 0.06);
+  border: 1px solid rgba(0, 229, 160, 0.2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--success);
+  font-weight: 600;
+  animation: ff-toast-in 0.3s ease-out;
+}
+
+.ff-ws-ready-banner svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* ── Phase 12: IdeaCapture hero — more welcoming ── */
+.ff-idea-hero {
+  background: linear-gradient(135deg,
+    rgba(0, 212, 245, 0.06) 0%,
+    rgba(0, 240, 232, 0.03) 50%,
+    transparent 100%
+  ) !important;
+  border-color: rgba(0, 212, 245, 0.15) !important;
+}
+
+.ff-idea-hero h1 {
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Phase 11: TopBar nav — hide About/Contact on workspace page ── */
+.ff-workspace-shell .ff-topbar-center .ff-topbar-page-link:not(.ff-topbar-badge-link) {
+  display: none;
+}
+
+/* ── Phase 11: Workspace toolbar — tighter on mobile ── */
+@media (max-width: 767px) {
+  .ff-workspace-toolbar {
+    padding: var(--sp-2) var(--sp-3);
+    gap: var(--sp-2);
+  }
+
+  .ff-workspace-eyebrow {
+    display: none;
+  }
+}

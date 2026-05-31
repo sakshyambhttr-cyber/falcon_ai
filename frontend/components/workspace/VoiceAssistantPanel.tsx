@@ -41,6 +41,8 @@ type VoiceAssistantPanelProps = {
   onRegisterAutoListen: (fn: (() => void) | null) => void
   // Phase 9: streaming state
   isStreamingResponse: boolean
+  // Phase 12: conversation history
+  conversationHistory?: Array<{ role: 'user' | 'advisor'; text: string }>
 }
 
 // ─── PHASE CONFIG (Phase 8) ───────────────────────────────────────────────────
@@ -170,7 +172,8 @@ export default function VoiceAssistantPanel({
   voiceConversationMode,
   onToggleConversationMode,
   onRegisterAutoListen,
-  isStreamingResponse
+  isStreamingResponse,
+  conversationHistory = []
 }: VoiceAssistantPanelProps) {
   const preset = MURF_VOICE_PRESETS[voiceStyle]
   const isSpeaking = voicePhase === 'speaking'
@@ -337,6 +340,28 @@ export default function VoiceAssistantPanel({
       {/* ── Error message ── */}
       {voiceError && (
         <div className="ff-voice-error" role="alert">{voiceError}</div>
+      )}
+
+      {/* ── Phase 12: Conversation history ── */}
+      {conversationHistory.length > 1 && (
+        <details className="ff-voice-history">
+          <summary className="ff-voice-history-summary">
+            Conversation ({Math.floor(conversationHistory.length / 2)} exchanges)
+          </summary>
+          <div className="ff-voice-history-list">
+            {conversationHistory.slice(-8).map((turn, i) => (
+              <div
+                key={i}
+                className={`ff-voice-history-turn ff-voice-history-turn--${turn.role}`}
+              >
+                <span className="ff-voice-history-role">
+                  {turn.role === 'user' ? 'You' : 'Falcon'}
+                </span>
+                <p className="ff-voice-history-text">{turn.text}</p>
+              </div>
+            ))}
+          </div>
+        </details>
       )}
 
       {/* ── Phase 8: Center visualization ── */}

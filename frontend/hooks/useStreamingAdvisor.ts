@@ -62,6 +62,14 @@ export function useStreamingAdvisor(options: Options): StreamingAdvisorState {
       })
 
       if (!res.ok || !res.body) {
+        // Handle rate limit gracefully — show countdown message
+        if (res.status === 429) {
+          const payload = await res.json().catch(() => ({}))
+          const wait = (payload as { retryAfter?: number }).retryAfter ?? 30
+          options.onError?.(`Rate limit reached. Try again in ${wait}s.`)
+          setIsStreaming(false)
+          return
+        }
         throw new Error(`Stream API ${res.status}`)
       }
 

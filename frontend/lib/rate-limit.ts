@@ -67,15 +67,20 @@ export async function checkRateLimit(request: Request): Promise<Response | null>
 
   const { success, limit, remaining, reset } = await rl.limit(getIdentifier(request))
   if (!success) {
+    const retryAfter = Math.ceil((reset - Date.now()) / 1000)
     return NextResponse.json(
-      { error: 'Too many requests. Please slow down.' },
+      {
+        error: 'Too many requests. Please wait a moment.',
+        retryAfter,
+        rateLimited: true
+      },
       {
         status: 429,
         headers: {
           'X-RateLimit-Limit':     String(limit),
           'X-RateLimit-Remaining': String(remaining),
           'X-RateLimit-Reset':     String(reset),
-          'Retry-After':           String(Math.ceil((reset - Date.now()) / 1000)),
+          'Retry-After':           String(retryAfter),
         },
       }
     )
@@ -91,15 +96,20 @@ export async function checkStrictRateLimit(request: Request): Promise<Response |
 
   const { success, limit, remaining, reset } = await rl.limit(getIdentifier(request))
   if (!success) {
+    const retryAfter = Math.ceil((reset - Date.now()) / 1000)
     return NextResponse.json(
-      { error: 'Rate limit exceeded for AI generation. Please wait before trying again.' },
+      {
+        error: `Rate limit reached. You can continue in ${retryAfter}s.`,
+        retryAfter,
+        rateLimited: true
+      },
       {
         status: 429,
         headers: {
           'X-RateLimit-Limit':     String(limit),
           'X-RateLimit-Remaining': String(remaining),
           'X-RateLimit-Reset':     String(reset),
-          'Retry-After':           String(Math.ceil((reset - Date.now()) / 1000)),
+          'Retry-After':           String(retryAfter),
         },
       }
     )

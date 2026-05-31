@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Button from '../Button'
 import Card from '../Card'
 import Panel from '../Panel'
@@ -39,6 +39,8 @@ type AnalysisWorkspaceProps = {
   onRegisterAutoListen: (fn: (() => void) | null) => void
   // Phase 9: streaming
   isStreamingResponse: boolean
+  // Phase 12: conversation history
+  conversationHistory: Array<{ role: 'user' | 'advisor'; text: string }>
 }
 
 function ValidationScoreRing({ score }: { score: number }) {
@@ -74,11 +76,22 @@ export default function AnalysisWorkspace({
   voiceConversationMode,
   onToggleConversationMode,
   onRegisterAutoListen,
-  isStreamingResponse
+  isStreamingResponse,
+  conversationHistory
 }: AnalysisWorkspaceProps) {
   const [mobilePanel, setMobilePanel] = useState<MobileWorkspacePanel>('stream')
+  const [showReadyBanner, setShowReadyBanner] = useState(false)
   const isLoading = intelligence.status === 'streaming' || intelligence.status === 'connecting'
+  const isComplete = intelligence.status === 'complete'
   const legacy = useMemo(() => intelligenceToLegacyResponse(intelligence), [intelligence])
+
+  // Phase 12: show "Falcon is ready" banner briefly when pipeline completes
+  useEffect(() => {
+    if (!isComplete) return
+    setShowReadyBanner(true)
+    const t = setTimeout(() => setShowReadyBanner(false), 4000)
+    return () => clearTimeout(t)
+  }, [isComplete])
 
   const navContent = useMemo(() => {
     const { memory } = intelligence
@@ -116,7 +129,12 @@ export default function AnalysisWorkspace({
 
   return (
     <div className="ff-analysis-workspace" data-mobile-panel={mobilePanel}>
-      <WorkspaceMobileTabs active={mobilePanel} onChange={setMobilePanel} />
+      <WorkspaceMobileTabs
+        active={mobilePanel}
+        onChange={setMobilePanel}
+        voicePhase={voicePhase}
+        isComplete={isComplete}
+      />
 
       {/* ── Left: Navigation sidebar ── */}
       <aside id="ws-panel-nav" className="ff-ws-nav ff-ws-panel" data-panel="nav">
@@ -159,6 +177,16 @@ export default function AnalysisWorkspace({
           </div>
           {score != null && <ValidationScoreRing score={score} />}
         </Card>
+
+        {/* Phase 12: Falcon is ready banner */}
+        {showReadyBanner && (
+          <div className="ff-ws-ready-banner" role="status" aria-live="polite">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            Falcon is ready — ask anything about your startup
+          </div>
+        )}
 
         <Panel title="Intelligence Feed" className="ff-ws-stream-panel">
           <IntelligenceEventRenderer state={intelligence} />
@@ -203,9 +231,30 @@ export default function AnalysisWorkspace({
             onToggleConversationMode={onToggleConversationMode}
             onRegisterAutoListen={onRegisterAutoListen}
             isStreamingResponse={isStreamingResponse}
+            conversationHistory={conversationHistory}
           />
         </Panel>
       </aside>
+
+      {/* ── Phase 11: Floating voice button for mobile ── */}
+      {mobilePanel !== 'voice' && (voicePhase === 'speaking' || voicePhase === 'listening' || voicePhase === 'thinking') && (
+        <button
+          type="button"
+          className={`ff-ws-float-voice-btn ff-ws-float-voice-btn--${voicePhase}`}
+          onClick={() => setMobilePanel('voice')}
+          aria-label="Open voice advisor"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="9" y="2" width="6" height="12" rx="3" />
+            <path d="M5 10a7 7 0 0 0 14 0" />
+            <line x1="12" y1="19" x2="12" y2="22" />
+            <line x1="8" y1="22" x2="16" y2="22" />
+          </svg>
+          <span className="ff-ws-float-voice-label">
+            {voicePhase === 'speaking' ? 'Speaking…' : voicePhase === 'listening' ? 'Listening…' : 'Thinking…'}
+          </span>
+        </button>
+      )}
     </div>
   )
 }

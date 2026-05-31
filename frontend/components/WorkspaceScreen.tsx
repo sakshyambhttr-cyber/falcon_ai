@@ -517,6 +517,7 @@ export default function WorkspaceScreen() {
             }}
             onRegisterAutoListen={(fn) => { onSpeakEndCallbackRef.current = fn }}
             isStreamingResponse={streamingAdvisor.isStreaming}
+            conversationHistory={projectMemory.history.map(t => ({ role: t.role, text: t.text }))}
           />
         )}
       </div>
