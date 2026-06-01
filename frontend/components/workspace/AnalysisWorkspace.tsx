@@ -404,12 +404,40 @@ export default function AnalysisWorkspace({
           onScroll={handleChatScroll}
         >
 
-          {/* Pipeline feed — shown while streaming */}
-          {(isLoading || intelligence.events.length > 0) && (
-            <div className="ff-cmd-pipeline-feed">
-              <IntelligenceEventRenderer state={intelligence} showFeed={false} />
-            </div>
-          )}
+        {/* Pipeline feed — shown while streaming — compact status only */}
+        {(isLoading || intelligence.events.length > 0) && (
+          <div className="ff-cmd-pipeline-feed">
+            {isLoading ? (
+              <div className="ff-cmd-pipeline-status">
+                <span className="ff-cmd-pipeline-dot" aria-hidden />
+                <span className="ff-cmd-pipeline-label">
+                  {intelligence.pipelineStatus
+                    ? intelligence.pipelineStatus.replace('.', ' › ').replace(/_/g, ' ')
+                    : 'Initializing pipeline…'}
+                </span>
+                <div className="ff-cmd-pipeline-steps">
+                  {intelligence.memory.analysis && <span className="ff-cmd-step done">Idea</span>}
+                  {intelligence.memory.market && <span className="ff-cmd-step done">Market</span>}
+                  {intelligence.memory.validation && <span className="ff-cmd-step done">Validation</span>}
+                  {Object.keys(intelligence.memory.prd).length > 0 && <span className="ff-cmd-step done">PRD</span>}
+                  {intelligence.memory.roadmap.length > 0 && <span className="ff-cmd-step done">Roadmap</span>}
+                  {!intelligence.memory.analysis && <span className="ff-cmd-step pending">Idea</span>}
+                  {!intelligence.memory.market && <span className="ff-cmd-step pending">Market</span>}
+                  {!intelligence.memory.validation && <span className="ff-cmd-step pending">Validation</span>}
+                  {Object.keys(intelligence.memory.prd).length === 0 && <span className="ff-cmd-step pending">PRD</span>}
+                  {intelligence.memory.roadmap.length === 0 && <span className="ff-cmd-step pending">Roadmap</span>}
+                </div>
+              </div>
+            ) : isComplete ? (
+              <div className="ff-cmd-pipeline-complete">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Analysis complete — ask anything about your startup
+              </div>
+            ) : null}
+          </div>
+        )}
 
           {/* Conversation history */}
           {conversationHistory.map((turn, i) => (

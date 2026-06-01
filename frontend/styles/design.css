@@ -10155,3 +10155,383 @@ button.ff-btn-primary {
   height: 100% !important;
   min-height: 0 !important;
 }
+
+
+/* ============================================================
+   GLOBAL ICON COLOR — WHITE/NEUTRAL THROUGHOUT
+   Apply brightness filter to all asset images so they render
+   as clean white icons regardless of source color
+   ============================================================ */
+
+/* All AssetImage / AppIcon instances — white filter */
+.ff-bottom-nav-icon-wrap img,
+.ff-ws-nav-item img,
+.ff-bento-card-top img,
+.ff-icon-box img,
+.ff-feature-icon img,
+.ff-voice-panel-header img,
+.ff-idea-hero img,
+.ff-ic-logo img,
+.ff-cmd-nav-project-icon img,
+.ff-about-cap-card img,
+.ff-contact-info-icon img {
+  filter: brightness(0) invert(1) !important;
+  opacity: 0.85;
+}
+
+/* Active nav items — slightly brighter */
+.ff-bottom-nav-item-active .ff-bottom-nav-icon-wrap img,
+.ff-ws-nav-item.active img,
+.ff-cmd-nav-item.active img {
+  filter: brightness(0) invert(1) !important;
+  opacity: 1;
+}
+
+/* Logo — keep original colors */
+.ff-topbar-logo img,
+.ff-logo-mark-wrap img,
+img[alt="Founder Falcon"] {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* ============================================================
+   WORKSPACE SCROLL FIX
+   The cmd-workspace grid needs proper height so inner panels
+   can scroll independently without the whole page scrolling
+   ============================================================ */
+
+/* Shell must be full height, no overflow */
+.ff-workspace-shell {
+  height: calc(100dvh - var(--ff-topbar-h, 56px) - var(--ff-bottomnav-h, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.ff-workspace-shell-content {
+  flex: 1 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Workspace page — no overflow, fills shell */
+.ff-workspace-page:has(.ff-cmd-workspace) {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+/* Command workspace fills the page */
+.ff-cmd-workspace {
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Each panel column must be independently scrollable */
+.ff-cmd-nav {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.ff-cmd-chat {
+  overflow: hidden !important; /* chat itself clips, messages scroll inside */
+}
+
+.ff-cmd-chat-messages {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.ff-cmd-docs {
+  overflow: hidden !important;
+}
+
+.ff-cmd-doc-content {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* ============================================================
+   LANDING HERO — BIGGER EYEBROW + FILL THE EMPTY SPACE
+   ============================================================ */
+
+/* Eyebrow pill — much larger and more prominent */
+.ff-eyebrow {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  padding: 6px 16px !important;
+  border-radius: var(--radius-pill) !important;
+  margin-bottom: var(--sp-5) !important;
+}
+
+/* Hero title — bigger on desktop */
+.ff-hero-title {
+  font-size: clamp(40px, 6vw, 72px) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.04em !important;
+  margin-bottom: var(--sp-5) !important;
+}
+
+/* Hero lead — slightly larger */
+.ff-hero-lead {
+  font-size: clamp(15px, 1.4vw, 18px) !important;
+  line-height: 1.7 !important;
+  max-width: 480px !important;
+  margin-bottom: var(--sp-6) !important;
+}
+
+/* CTA buttons — bigger */
+.ff-hero-cta-row {
+  margin-bottom: var(--sp-5) !important;
+  gap: var(--sp-3) !important;
+}
+
+.ff-btn-lg {
+  padding: 13px 28px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+/* Trust row — more spacing */
+.ff-hero-trust-row {
+  margin-bottom: var(--sp-5) !important;
+}
+
+/* Stats row — bigger numbers */
+.ff-hero-stat-value {
+  font-size: clamp(22px, 2.5vw, 32px) !important;
+  font-weight: 800 !important;
+}
+
+.ff-hero-stat-label {
+  font-size: 12px !important;
+}
+
+/* Hero section — ensure it fills viewport with no empty gap */
+.ff-landing-hero {
+  min-height: calc(100dvh - var(--ff-topbar-h, 56px) - var(--ff-bottomnav-h, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  padding-top: clamp(40px, 6vh, 80px) !important;
+  padding-bottom: clamp(40px, 6vh, 80px) !important;
+  align-items: center !important;
+}
+
+/* Demo aside — make mockup bigger */
+.ff-demo-aside {
+  max-width: 520px !important;
+}
+
+/* Features section — tighter, no wasted space */
+.ff-landing-features {
+  padding: 60px var(--sp-5) !important;
+}
+
+.ff-landing-section-title {
+  font-size: clamp(24px, 3vw, 38px) !important;
+  margin-bottom: var(--sp-4) !important;
+}
+
+/* CTA banner — more padding */
+.ff-landing-cta-banner {
+  padding: 80px var(--sp-5) !important;
+}
+
+.ff-landing-cta-title {
+  font-size: clamp(28px, 4vw, 48px) !important;
+}
+
+
+/* ============================================================
+   ZOOM / RESIZE STABILITY FIX
+   Use clamp() for all fixed dimensions so the layout adapts
+   when the user zooms in/out with Ctrl+scroll
+   ============================================================ */
+
+/* Command workspace — fluid columns that adapt to zoom */
+.ff-cmd-workspace {
+  grid-template-columns:
+    clamp(160px, 18vw, 260px)
+    minmax(0, 1fr)
+    clamp(280px, 28vw, 420px) !important;
+}
+
+/* At 1200px and below — tighter columns */
+@media (max-width: 1200px) {
+  .ff-cmd-workspace {
+    grid-template-columns:
+      clamp(140px, 16vw, 200px)
+      minmax(0, 1fr)
+      clamp(240px, 26vw, 340px) !important;
+  }
+}
+
+/* At 1024px and below — hide left nav */
+@media (max-width: 1024px) {
+  .ff-cmd-workspace {
+    grid-template-columns: minmax(0, 1fr) clamp(240px, 32vw, 340px) !important;
+  }
+  .ff-cmd-nav { display: none !important; }
+}
+
+/* At 768px and below — single column */
+@media (max-width: 768px) {
+  .ff-cmd-workspace {
+    grid-template-columns: 1fr !important;
+  }
+  .ff-cmd-docs { display: none; }
+}
+
+/* Workspace height — use min() to prevent overflow at any zoom level */
+.ff-cmd-workspace,
+.ff-workspace-shell,
+.ff-workspace-shell-content {
+  max-height: 100dvh !important;
+}
+
+/* Landing hero — fluid at all zoom levels */
+.ff-landing-hero {
+  min-height: min(
+    calc(100dvh - var(--ff-topbar-h, 56px) - var(--ff-bottomnav-h, 0px)),
+    900px
+  ) !important;
+  height: auto !important;
+}
+
+/* Landing page — always scrollable, never fixed height */
+.ff-landing-page {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Contact layout — fluid columns */
+.ff-contact-layout {
+  grid-template-columns: clamp(280px, 35vw, 420px) minmax(0, 1fr) !important;
+  min-height: min(
+    calc(100dvh - var(--ff-topbar-h, 56px) - var(--ff-bottomnav-h, 0px)),
+    900px
+  ) !important;
+}
+
+@media (max-width: 900px) {
+  .ff-contact-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* IdeaCapture — always centered, never overflows */
+.ff-workspace-page:not(:has(.ff-cmd-workspace)) {
+  min-height: 100dvh !important;
+  height: auto !important;
+  overflow-y: auto !important;
+}
+
+/* Topbar — never wraps or overflows */
+.ff-topbar {
+  min-height: var(--ff-topbar-h, 56px) !important;
+  flex-shrink: 0 !important;
+}
+
+.ff-topbar-center {
+  overflow: hidden !important;
+  flex-shrink: 1 !important;
+  min-width: 0 !important;
+}
+
+/* Bottom nav — always at bottom, never overlaps */
+.ff-bottom-nav {
+  flex-shrink: 0 !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 100 !important;
+}
+
+/* ============================================================
+   PIPELINE STATUS — COMPACT STREAMING INDICATOR
+   Replaces the full IntelligenceEventRenderer during streaming
+   ============================================================ */
+
+.ff-cmd-pipeline-feed {
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,0.02) !important;
+  border: 1px solid var(--border-subtle) !important;
+  flex-shrink: 0 !important;
+}
+
+.ff-cmd-pipeline-status {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ff-cmd-pipeline-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--neon-blue);
+  animation: ff-status-pulse 0.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.ff-cmd-pipeline-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ff-cmd-pipeline-steps {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ff-cmd-step {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.ff-cmd-step.done {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.06);
+}
+
+.ff-cmd-step.pending {
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+  background: transparent;
+  opacity: 0.5;
+}
+
+.ff-cmd-pipeline-complete {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #34d399;
+}
