@@ -125,10 +125,12 @@ function advisorOpener(ideaKeyword: string): string {
     `I've looked at this carefully, and here's my honest take.`,
     `This idea has some strong signals worth paying attention to.`,
     `Let me share what stands out to me about this opportunity.`,
+    `Here's what I see when I look at this space.`,
+    `I've run the numbers and there's something real here.`,
+    `This is worth building — let me tell you why.`,
   ]
-  // Deterministic selection based on keyword hash so it's consistent per idea
-  const hash = ideaKeyword.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  return openers[hash % openers.length]
+  // Use random selection so replays feel different
+  return openers[Math.floor(Math.random() * openers.length)]
 }
 
 function advisorCloser(): string {

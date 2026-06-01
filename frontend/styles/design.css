@@ -6609,3 +6609,238 @@ details.ff-voice-history[open] .ff-voice-history-summary::before {
   0%, 100% { opacity: 0.5; }
   50%       { opacity: 1; }
 }
+
+
+/* ============================================================
+   MOBILE + TABLET WORKSPACE — COMPREHENSIVE LAYOUT FIX
+   ============================================================ */
+
+/* ── Mobile (< 768px) ── */
+@media (max-width: 767px) {
+  /* Workspace page must fill the full viewport height */
+  .ff-workspace-shell,
+  .ff-workspace-shell-content {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ff-workspace-page {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    /* Account for topbar + bottom nav */
+    height: calc(100dvh - var(--ff-topbar-h, 56px) - var(--ff-bottomnav-h, 64px) - env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+  }
+
+  /* Toolbar — compact, no wrapping */
+  .ff-workspace-toolbar {
+    flex-direction: row !important;
+    align-items: center;
+    padding: var(--sp-2) var(--sp-3);
+    gap: var(--sp-2);
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .ff-workspace-eyebrow { display: none; }
+
+  .ff-workspace-new-idea {
+    font-size: var(--text-xs);
+    padding: var(--sp-1) var(--sp-3);
+  }
+
+  /* Analysis workspace — full height flex column */
+  .ff-analysis-workspace {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'tabs'
+      'stream';
+    overflow: hidden;
+  }
+
+  /* Mobile tabs — sticky at top, never scroll off screen */
+  .ff-ws-mobile-tabs {
+    grid-area: tabs;
+    display: flex;
+    flex-shrink: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-elevated);
+  }
+
+  .ff-ws-tab-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: var(--sp-2) var(--sp-2);
+    font-size: var(--text-xs);
+    gap: 4px;
+  }
+
+  /* Panels — fill remaining height, scroll internally */
+  .ff-ws-panel {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ff-ws-panel[data-panel='stream'],
+  .ff-ws-panel[data-panel='nav'],
+  .ff-ws-panel[data-panel='voice'] {
+    grid-area: stream;
+    display: none;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Default: show stream panel */
+  .ff-ws-panel[data-panel='stream'] { display: flex; }
+
+  /* Nav tab active */
+  .ff-analysis-workspace[data-mobile-panel='nav'] .ff-ws-panel[data-panel='nav'] {
+    display: flex;
+  }
+  .ff-analysis-workspace[data-mobile-panel='nav'] .ff-ws-panel[data-panel='stream'] {
+    display: none;
+  }
+
+  /* Voice tab active */
+  .ff-analysis-workspace[data-mobile-panel='voice'] .ff-ws-panel[data-panel='voice'] {
+    display: flex;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ff-analysis-workspace[data-mobile-panel='voice'] .ff-ws-panel[data-panel='stream'] {
+    display: none;
+  }
+
+  /* Panel bodies — scrollable */
+  .ff-ws-panel .ff-panel,
+  .ff-ws-panel .ff-panel-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Center panel — stream + doc stacked, both scrollable */
+  .ff-ws-center {
+    flex-direction: column;
+    gap: var(--sp-2);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--sp-3);
+  }
+
+  .ff-ws-center-header {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--sp-3);
+    gap: var(--sp-3);
+    flex-shrink: 0;
+  }
+
+  .ff-ws-center-header h2 {
+    font-size: var(--text-sm);
+    margin: 0;
+  }
+
+  .ff-ws-center-header p {
+    font-size: var(--text-xs);
+    margin: 2px 0 0;
+  }
+
+  /* Voice panel — scrollable, padded for bottom nav */
+  .ff-ws-voice {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--sp-5) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ff-ws-voice .ff-panel-body {
+    padding-bottom: var(--sp-6);
+  }
+
+  /* Nav panel — scrollable */
+  .ff-ws-nav {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Score ring — smaller on mobile */
+  .ff-score-ring {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  /* Ready banner — compact */
+  .ff-ws-ready-banner {
+    font-size: var(--text-xs);
+    padding: var(--sp-2) var(--sp-3);
+    margin: 0 var(--sp-3);
+  }
+}
+
+/* ── Tablet (768px – 1023px) ── */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .ff-workspace-page {
+    padding: var(--sp-3);
+    height: calc(100dvh - var(--ff-topbar-h, 56px) - env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Tablet: 2-column — nav + center, voice below */
+  .ff-analysis-workspace {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'tabs tabs'
+      'nav  stream'
+      'voice voice';
+    gap: var(--sp-3);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ff-ws-mobile-tabs {
+    display: flex;
+    grid-area: tabs;
+  }
+
+  .ff-ws-nav    { grid-area: nav;    min-height: 0; overflow-y: auto; }
+  .ff-ws-center { grid-area: stream; min-height: 0; overflow: hidden; }
+  .ff-ws-voice  {
+    grid-area: voice;
+    max-height: min(300px, 35vh);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* On tablet, all panels always visible — no tab switching needed */
+  .ff-ws-panel[data-panel] { display: flex !important; min-height: 0; }
+
+  /* Voice panel horizontal on tablet */
+  .ff-ws-voice .ff-voice-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-4);
+    align-items: start;
+  }
+
+  .ff-ws-voice .ff-voice-wave-area { display: none; }
+}
