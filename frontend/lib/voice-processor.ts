@@ -111,7 +111,7 @@ export function addNaturalPacing(text: string): string {
 // ─── VOICE PERSONA TEMPLATES ─────────────────────────────────────────────────
 
 /**
- * Murf Falcon Voice Persona: Senior Startup Advisor
+ * Founder Falcon Voice Persona: Senior Startup Advisor
  *
  * Tone: intelligent, warm, confident, strategic, conversational
  * Style: mentor who has built companies, not a narrator reading a report

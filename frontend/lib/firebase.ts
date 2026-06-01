@@ -1,5 +1,5 @@
 /**
- * MURF FALCON — FIREBASE v10 CONFIGURATION
+ * FOUNDER FALCON — FIREBASE v10 CONFIGURATION
  *
  * Firebase Authentication with:
  * - Email + Password Sign Up / Sign In

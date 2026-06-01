@@ -14,7 +14,7 @@ export default function ContactPage() {
             <AssetImage asset="nav-contact" size={24} alt="" />
           </span>
           <div>
-            <h1>Contact Murf Falcon</h1>
+            <h1>Contact Founder Falcon</h1>
             <p>Partnerships, feedback, and early access — we read every message.</p>
           </div>
         </header>
