@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — WORKSPACE SCREEN
+ * FOUNDER FALCON — WORKSPACE SCREEN
  *
  * Phase 9: Streaming responses — advisor text streams token-by-token via SSE
  * Phase 10: Workspace integration — chat commands mutate workspace documents live
@@ -16,7 +16,6 @@ import { useProjectMemory } from '../hooks/useProjectMemory'
 import { useStreamingAdvisor } from '../hooks/useStreamingAdvisor'
 import { detectWorkspaceIntent, applyWorkspaceMutation } from '../lib/workspace-intent'
 import {
-  generateContextualVoiceResponse,
   cleanForSpeech,
 } from '../lib/voice-processor'
 import type { WorkspaceNavSection } from '../lib/workspace-sections'
@@ -233,37 +232,47 @@ export default function WorkspaceScreen() {
   // ─── GENERATE + SPEAK ADVISOR RESPONSE ──────────────────────────────────────
 
   /**
-   * generateAndSpeak() — the dual-output entry point.
+   * generateAndSpeak() — used for initial pipeline completion briefing.
    *
-   * Workspace output: already rendered by IntelligenceEventRenderer
-   * Voice output: generated here via generateVoiceResponse(), then spoken
+   * Routes through Gemini via /api/advisor/chat so the response is
+   * dynamic and context-aware, not a static template.
+   * Falls back to the local template only if Gemini fails.
    */
-  const generateAndSpeak = useCallback((isReplay = false) => {
+  const generateAndSpeak = useCallback(async (isReplay = false) => {
     if (!voiceEnabled) return
 
-    // Generate the conversational advisor response (NOT the workspace output)
-    const advisorText = generateContextualVoiceResponse(
-      { idea, state: intelligence },
-      isReplay
-    )
+    // Don't re-read if already speaking or streaming
+    if (voicePhase === 'speaking' || voicePhase === 'preparing' || streamingAdvisor.isStreaming) return
 
-    if (!advisorText.trim()) return
+    stopSpeaking()
+    streamingAdvisor.abort()
+    setVoiceError(null)
+    setVoiceText('')
+    setVoicePhase('thinking')
 
-    // Show the advisor text in the voice panel
-    setVoiceText(advisorText)
+    // Build a context-aware question for the initial briefing
+    const briefingQuestion = isReplay
+      ? `Give me a fresh take on my startup — different from what you said before. Focus on the most important thing I should do next.`
+      : `I just got my startup analysis back. Give me your honest advisor take — what's the most important thing I need to know about this opportunity?`
 
-    // Speak it
-    void speak(advisorText)
-  }, [voiceEnabled, idea, intelligence, speak])
+    const context = projectMemory.getContextForAdvisor()
+    if (!context.idea) context.idea = idea
+
+    // Record as a system turn so history tracks it
+    projectMemory.addTurn('user', briefingQuestion)
+
+    await streamingAdvisor.ask(briefingQuestion, context)
+    // onComplete callback in useStreamingAdvisor handles speak()
+  }, [voiceEnabled, voicePhase, idea, projectMemory, stopSpeaking, streamingAdvisor])
 
   // ─── VOICE CONTROLS ─────────────────────────────────────────────────────────
 
   function handlePlaySummary() {
-    generateAndSpeak(false)
+    void generateAndSpeak(false)
   }
 
   function handleReplaySummary() {
-    generateAndSpeak(true)
+    void generateAndSpeak(true)
   }
 
   // ─── PHASE 9: STREAMING ADVISOR HOOK ────────────────────────────────────────
@@ -321,7 +330,7 @@ export default function WorkspaceScreen() {
     if (!intelligence.memory.final) return
 
     spokeOnComplete.current = true
-    generateAndSpeak(false)
+    void generateAndSpeak(false)
   }, [intelligence.status, intelligence.memory.final, voiceEnabled, generateAndSpeak])
 
   // ─── AUTO-START FROM URL PARAMS ─────────────────────────────────────────────
@@ -418,10 +427,10 @@ export default function WorkspaceScreen() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    const safeTitle =
+        const safeTitle =
       intelligence.memory.final?.startup_name_suggestion
         ?.toLowerCase().replace(/[^a-z0-9]+/g, '-') ?? 'startup'
-    link.download = `murf-falcon-${safeTitle}-pack.md`
+    link.download = `founder-falcon-${safeTitle}-pack.md`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -451,8 +460,8 @@ export default function WorkspaceScreen() {
         )}
 
         {inAnalysisMode && (
-          <header className="ff-workspace-toolbar">
-            <span className="ff-workspace-eyebrow">Murf Falcon · Intelligence Pipeline</span>
+              <header className="ff-workspace-toolbar">
+                <span className="ff-workspace-eyebrow">Founder Falcon · Intelligence Pipeline</span>
             <div className="ff-workspace-topbar-actions">
               <button
                 type="button"

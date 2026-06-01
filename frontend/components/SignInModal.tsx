@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — SIGN IN MODAL
+ * FOUNDER FALCON — SIGN IN MODAL
  *
  * Supports:
  * - Google OAuth
@@ -120,7 +120,7 @@ export default function SignInModal({ open, onClose }: SignInModalProps) {
 
   const SUBTITLES: Record<AuthMode, string> = {
     signin: 'Sign in to save your startup intelligence sessions.',
-    signup: 'Join Murf Falcon to build your startup operating system.',
+    signup: 'Join Founder Falcon to build your startup operating system.',
     reset: 'Enter your email and we\'ll send a reset link.'
   }
 

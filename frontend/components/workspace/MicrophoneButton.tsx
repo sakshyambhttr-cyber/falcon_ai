@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — MICROPHONE BUTTON
+ * FOUNDER FALCON — MICROPHONE BUTTON
  *
  * A premium, animated microphone button for voice input.
  * Integrates with useSpeechInput() hook.

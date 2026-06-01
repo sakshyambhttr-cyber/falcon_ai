@@ -1,4 +1,4 @@
-/** Murf Falcon voice presets — all female en-US (Murf API voice library). */
+/** Founder Falcon voice presets — all female en-US (Murf API voice library). */
 
 export type VoiceStyle = 'advisor' | 'executive' | 'warm' | 'energetic'
 

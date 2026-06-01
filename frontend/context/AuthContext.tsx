@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — AUTH CONTEXT
+ * FOUNDER FALCON — AUTH CONTEXT
  *
  * Centralized auth state management. Provides:
  * - Current user object

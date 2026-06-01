@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * MURF FALCON — SPEECH INPUT HOOK
+ * FOUNDER FALCON — SPEECH INPUT HOOK
  *
  * Provides real-time speech-to-text using the Web Speech API.
  * Transcript appears live as the user speaks.
