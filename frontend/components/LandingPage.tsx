@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Button from './Button'
-import AssetImage from './AssetImage'
 import AmbientBackground from './AmbientBackground'
 import InteractiveAppMockup from './InteractiveAppMockup'
 import FeatureInsightModal from './FeatureInsightModal'
@@ -82,50 +81,38 @@ export default function LandingPage() {
       <main className="ff-landing">
         <section className="ff-landing-hero">
           <div className="ff-landing-hero-copy">
-            <span className="ff-eyebrow">AI Cofounder · Voice-First · Outcome-Driven</span>
-            <h1 className="ff-hero-title">Build startups with AI intelligence</h1>
+            <span className="ff-eyebrow">AI Startup Operating System</span>
+            <h1 className="ff-hero-title">Your AI co-founder,<br />from idea to launch</h1>
             <p className="ff-hero-lead">
-              Speak your idea. Get instant concept validation, technical architecture specifications,
-              pitch materials, and checklists — all through an ultra-realistic voice co-founder
-              conversation.
-            </p>
-            <p className="ff-hero-lead ff-hero-lead-secondary">
-              Transform raw startup thoughts into validated opportunities, structured product plans,
-              and actionable execution roadmaps powered by AI. Generate startup intelligence, PRDs,
-              validation reports, and growth strategies in one unified workspace.
+              Speak or type your startup idea. Get instant validation, a full PRD,
+              roadmap, and an AI advisor that remembers your project — all in one workspace.
             </p>
 
             <div className="ff-hero-cta-row">
               <Link href="/workspace" className="ff-cta-link">
                 <Button variant="primary" className="ff-btn-lg">
-                  Enter Workspace
+                  Start for free
                 </Button>
               </Link>
               <Link href="/demo" className="ff-cta-link">
                 <Button variant="outline" className="ff-btn-lg">
-                  Watch Demo
+                  See how it works
                 </Button>
               </Link>
             </div>
 
             <div className="ff-hero-trust-row">
               <div className="ff-trust-item">
-                <span className="ff-icon-box ff-trust-icon">
-                  <AssetImage asset="waveform" size={24} alt="Voice" />
-                </span>
-                <small>Voice Powered</small>
+                <span className="ff-trust-dot" aria-hidden="true" />
+                <small>Voice-first input</small>
               </div>
               <div className="ff-trust-item">
-                <span className="ff-icon-box ff-trust-icon">
-                  <AssetImage asset="ai" size={24} alt="AI Co-founder" />
-                </span>
-                <small>AI Co-founder</small>
+                <span className="ff-trust-dot" aria-hidden="true" />
+                <small>Gemini-powered analysis</small>
               </div>
               <div className="ff-trust-item">
-                <span className="ff-icon-box ff-trust-icon">
-                  <AssetImage asset="output" size={24} alt="Real Outputs" />
-                </span>
-                <small>Real Outputs</small>
+                <span className="ff-trust-dot" aria-hidden="true" />
+                <small>PRD + Roadmap + Validation</small>
               </div>
             </div>
           </div>

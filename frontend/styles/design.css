@@ -1,50 +1,49 @@
 /* ============================================================
-  FOUNDER FALCON — PRODUCTION DESIGN SYSTEM
-   Single source of truth for all visual tokens and components
+   FOUNDER FALCON — PRODUCTION DESIGN SYSTEM v2
+   Professional SaaS — Linear / Vercel / Notion quality
    ============================================================ */
 
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
-  /* Backgrounds — layered depth (no pure black) */
-  --bg:           #0c1219;
-  --bg-elevated:  #131b28;
-  --bg-surface:   #1a2433;
-  --bg-overlay:   #222d42;
-  --bg-inset:     #0a1018;
+  /* ── Backgrounds — refined neutral dark, not "AI blue" ── */
+  --bg:           #0d0f12;
+  --bg-elevated:  #13161b;
+  --bg-surface:   #191d24;
+  --bg-overlay:   #1f242e;
+  --bg-inset:     #0a0c0f;
 
-  /* Glass surfaces */
-  --panel:        rgba(255, 255, 255, 0.05);
-  --glass:        rgba(255, 255, 255, 0.065);
-  --glass-hover:  rgba(255, 255, 255, 0.09);
+  /* Glass surfaces — more neutral, less blue */
+  --panel:        rgba(255, 255, 255, 0.04);
+  --glass:        rgba(255, 255, 255, 0.055);
+  --glass-hover:  rgba(255, 255, 255, 0.08);
 
-  /* Borders & dividers */
-  --border-subtle:  rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-accent:  rgba(0, 212, 245, 0.22);
-  --border-strong:  rgba(0, 212, 245, 0.38);
+  /* Borders — neutral first, accent only where intentional */
+  --border-subtle:  rgba(255, 255, 255, 0.055);
+  --border-default: rgba(255, 255, 255, 0.09);
+  --border-accent:  rgba(99, 179, 237, 0.18);
+  --border-strong:  rgba(99, 179, 237, 0.32);
 
-  /* Text hierarchy — improved contrast */
-  --text-primary:   #f2f9fb;
-  --text-secondary: #adc4cc;
-  --text-muted:     #7fa3b0;
-  --text-disabled:  #4d6d78;
-  --text-prose:     #d4eaf0;
-  --text-on-accent: #001820;
+  /* Text hierarchy — high contrast, readable */
+  --text-primary:   #f0f4f8;
+  --text-secondary: #9baab8;
+  --text-muted:     #6b7d8e;
+  --text-disabled:  #3d4f5c;
+  --text-prose:     #c8d8e4;
+  --text-on-accent: #ffffff;
 
-  /* Brand accent — neon cyan/blue */
-  --neon-blue:  #00d4f5;
-  --neon-cyan:  #00f0e8;
-  --neon-glow:  rgba(0, 212, 245, 0.2);
-  --accent:     linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
-  --accent-soft: rgba(0, 212, 245, 0.1);
-  --gradient-hero: radial-gradient(ellipse 100% 60% at 50% -10%, rgba(0, 212, 245, 0.1), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(0, 240, 232, 0.06), transparent 50%);
+  /* Brand accent — refined blue, not neon cyan */
+  --neon-blue:  #4f9cf9;
+  --neon-cyan:  #38bdf8;
+  --neon-glow:  rgba(79, 156, 249, 0.15);
+  --accent:     linear-gradient(90deg, #4f9cf9, #38bdf8);
+  --accent-soft: rgba(79, 156, 249, 0.08);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(79, 156, 249, 0.07), transparent 60%);
 
   /* Semantic colors */
-  --success:    #00e5a0;
-  --warning:    #f5c842;
-  --error:      #ff6b6b;
-  --error-soft: #ff8a8a;
+  --success:    #34d399;
+  --warning:    #fbbf24;
+  --error:      #f87171;
+  --error-soft: #fca5a5;
   --info:       var(--neon-blue);
 
   /* Spacing scale — 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 */
@@ -65,11 +64,11 @@
   --space-5: var(--sp-6);
   --space-6: var(--sp-7);
 
-  /* Border radius — Small · Medium · Large · XL */
-  --radius-sm:    6px;
-  --radius-md:    10px;
-  --radius-lg:    14px;
-  --radius-xl:    20px;
+  /* Border radius */
+  --radius-sm:    5px;
+  --radius-md:    8px;
+  --radius-lg:    12px;
+  --radius-xl:    16px;
   --radius-pill:  999px;
   --radius-small: var(--radius-sm);
   --radius-medium: var(--radius-md);
@@ -81,22 +80,22 @@
   --font-display: var(--font-manrope, Manrope), var(--font-sans);
   --font-mono:    ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
 
-  /* Type scale (px) */
+  /* Type scale — tighter, more professional */
   --text-xs:      11px;
   --text-caption: 12px;
   --text-sm:      13px;
-  --text-base:    15px;
-  --text-md:      17px;
-  --text-lg:      20px;
-  --text-xl:      24px;
-  --text-2xl:     30px;
-  --text-3xl:     38px;
-  --text-4xl:     52px;
+  --text-base:    14px;
+  --text-md:      16px;
+  --text-lg:      18px;
+  --text-xl:      22px;
+  --text-2xl:     28px;
+  --text-3xl:     36px;
+  --text-4xl:     48px;
 
-  /* Semantic type roles */
-  --type-display-size: clamp(34px, 5vw, var(--text-4xl));
-  --type-h1-size:      clamp(28px, 4vw, var(--text-3xl));
-  --type-h2-size:      clamp(24px, 3.5vw, var(--text-2xl));
+  /* Semantic type roles — more restrained */
+  --type-display-size: clamp(32px, 4.5vw, 48px);
+  --type-h1-size:      clamp(24px, 3.5vw, 36px);
+  --type-h2-size:      clamp(20px, 3vw, 28px);
   --type-h3-size:      var(--text-lg);
   --type-body-size:    var(--text-base);
   --type-caption-size: var(--text-caption);
@@ -108,64 +107,55 @@
   --font-extrabold: 800;
 
   /* Line heights */
-  --line-tight:   1.15;
-  --line-snug:    1.3;
-  --line-normal:  1.5;
-  --line-relaxed: 1.65;
+  --line-tight:   1.2;
+  --line-snug:    1.35;
+  --line-normal:  1.55;
+  --line-relaxed: 1.7;
 
   /* Letter spacing */
-  --track-tight:  -0.04em;
-  --track-snug:   -0.02em;
+  --track-tight:  -0.03em;
+  --track-snug:   -0.015em;
   --track-normal: 0;
-  --track-wide:   0.06em;
-  --track-wider:  0.14em;
+  --track-wide:   0.05em;
+  --track-wider:  0.12em;
 
-  /* Unified glass surfaces (landing · workspace · voice · output) */
-  --surface-card-bg: linear-gradient(
-    155deg,
-    rgba(255, 255, 255, 0.075) 0%,
-    rgba(255, 255, 255, 0.028) 100%
-  );
+  /* Surfaces — cleaner, less gradient-heavy */
+  --surface-card-bg: rgba(255, 255, 255, 0.04);
   --surface-card-border: var(--border-default);
-  --surface-card-shadow: var(--shadow-card);
-  --surface-accent-bg: linear-gradient(
-    155deg,
-    rgba(0, 212, 245, 0.1) 0%,
-    rgba(255, 255, 255, 0.04) 55%,
-    rgba(255, 255, 255, 0.025) 100%
-  );
-  --surface-accent-border: var(--border-accent);
-  --surface-accent-glow: 0 0 var(--sp-7) rgba(0, 212, 245, 0.08);
-  --surface-panel-header-bg: rgba(255, 255, 255, 0.035);
-  --surface-inset-bg: rgba(255, 255, 255, 0.04);
+  --surface-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.04);
+  --surface-accent-bg: rgba(79, 156, 249, 0.06);
+  --surface-accent-border: rgba(79, 156, 249, 0.2);
+  --surface-accent-glow: none;
+  --surface-panel-header-bg: rgba(255, 255, 255, 0.025);
+  --surface-inset-bg: rgba(255, 255, 255, 0.03);
   --surface-inset-border: var(--border-subtle);
-  --surface-chrome-bg: rgba(12, 18, 25, 0.92);
-  --surface-mockup-bg: rgba(12, 18, 25, 0.94);
+  --surface-chrome-bg: rgba(13, 15, 18, 0.95);
+  --surface-mockup-bg: rgba(13, 15, 18, 0.97);
 
-  /* Effects */
-  --glass-blur:   16px;
+  /* Effects — minimal, purposeful */
+  --glass-blur:   12px;
   --glass-backdrop: blur(var(--glass-blur));
-  --shadow-sm:    0 2px var(--sp-2) rgba(0, 0, 0, 0.28);
-  --shadow-md:    0 var(--sp-2) var(--sp-5) rgba(0, 0, 0, 0.38);
-  --shadow-lg:    0 var(--sp-4) var(--sp-7) rgba(0, 0, 0, 0.48);
-  --shadow-glow:  0 0 var(--sp-6) var(--neon-glow);
-  --shadow-card:  0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-md);
+  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md:    0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg:    0 12px 40px rgba(0, 0, 0, 0.45);
+  --shadow-glow:  none;
+  --shadow-card:  0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.3);
 
   /* Layout */
   --content-max:    1280px;
-  --ff-topbar-h:    74px;
-  --ff-bottomnav-h: 80px;
-  --control-h-sm:   36px;
-  --control-h-md:   42px;
-  --control-h-lg:   48px;
+  --ff-topbar-h:    56px;
+  --ff-bottomnav-h: 64px;
+  --control-h-sm:   32px;
+  --control-h-md:   38px;
+  --control-h-lg:   44px;
 
   /* Transitions */
   --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in:   cubic-bezier(0.4, 0, 1, 1);
   --ease-std:  cubic-bezier(0.4, 0, 0.2, 1);
-  --dur-fast:  150ms;
-  --dur-std:   220ms;
-  --dur-slow:  350ms;
+  --dur-fast:  120ms;
+  --dur-std:   200ms;
+  --dur-slow:  300ms;
 }
 
 /* ── BASE RESET & TYPOGRAPHY ───────────────────────────────── */
@@ -376,22 +366,16 @@ button:disabled,
   align-items: center;
   gap: var(--sp-4);
   padding: 0 clamp(var(--sp-4), 3vw, var(--sp-6));
-  border-bottom: 1px solid var(--border-accent);
-  background: linear-gradient(180deg, rgba(19, 27, 40, 0.97) 0%, rgba(12, 18, 25, 0.93) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 1px 0 rgba(0, 212, 245, 0.07), 0 12px 40px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(13, 15, 18, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 150;
   position: relative;
 }
 
 .ff-topbar-accent {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 212, 245, 0.5) 50%, transparent);
-  opacity: 0.6;
-  pointer-events: none;
+  display: none;
 }
 
 .ff-topbar-start {
@@ -6843,4 +6827,485 @@ details.ff-voice-history[open] .ff-voice-history-summary::before {
   }
 
   .ff-ws-voice .ff-voice-wave-area { display: none; }
+}
+
+
+/* ============================================================
+   PROFESSIONAL SAAS REDESIGN — v2
+   Linear / Vercel / Notion quality
+   ============================================================ */
+
+/* ── Ambient background — much more subtle ── */
+.ff-ambient-bg {
+  opacity: 0.35 !important;
+}
+
+/* ── Hero — tighter, more focused ── */
+.ff-hero-title {
+  font-size: clamp(32px, 5vw, 52px) !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--text-primary) !important;
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
+}
+
+.ff-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-blue);
+  background: rgba(79, 156, 249, 0.08);
+  border: 1px solid rgba(79, 156, 249, 0.18);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  margin-bottom: var(--sp-4);
+}
+
+.ff-hero-lead {
+  font-size: var(--text-md) !important;
+  line-height: 1.65 !important;
+  color: var(--text-secondary) !important;
+  max-width: 520px;
+  font-weight: 400 !important;
+}
+
+.ff-hero-lead-secondary { display: none !important; }
+
+/* ── Trust row — minimal dots, no icons ── */
+.ff-hero-trust-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  margin-top: var(--sp-5);
+}
+
+.ff-trust-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.ff-trust-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--neon-blue);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+/* ── Buttons — cleaner, less gradient ── */
+.ff-btn-primary,
+.ff-btn[data-variant='primary'],
+button.ff-btn-primary {
+  background: var(--neon-blue) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+.ff-btn-primary:hover,
+.ff-btn[data-variant='primary']:hover {
+  background: #3b8ef0 !important;
+  box-shadow: none !important;
+}
+
+.ff-btn-outline,
+.ff-btn[data-variant='outline'] {
+  background: transparent !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+}
+
+.ff-btn-outline:hover,
+.ff-btn[data-variant='outline']:hover {
+  border-color: var(--border-default) !important;
+  background: var(--glass) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ── Cards — flat, no gradient ── */
+.ff-card {
+  background: var(--surface-card-bg) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.ff-card:hover {
+  border-color: var(--border-default) !important;
+  background: var(--glass) !important;
+}
+
+/* ── Panels — clean sidebar style ── */
+.ff-panel {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+}
+
+.ff-panel-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: var(--sp-3) var(--sp-4) !important;
+}
+
+.ff-panel-title {
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+/* ── TopBar nav pills — cleaner ── */
+.ff-topbar-nav-pill {
+  font-size: var(--text-sm) !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+  border: none !important;
+  padding: var(--sp-2) var(--sp-3) !important;
+  border-radius: var(--radius-md) !important;
+  transition: color var(--dur-fast), background var(--dur-fast);
+}
+
+.ff-topbar-nav-pill:hover,
+.ff-topbar-nav-pill.active {
+  color: var(--text-primary) !important;
+  background: var(--glass) !important;
+}
+
+.ff-topbar-nav-pill-accent {
+  background: rgba(79, 156, 249, 0.1) !important;
+  border: 1px solid rgba(79, 156, 249, 0.2) !important;
+  color: var(--neon-blue) !important;
+}
+
+.ff-topbar-nav-pill-accent:hover {
+  background: rgba(79, 156, 249, 0.15) !important;
+}
+
+.ff-topbar-badge {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+}
+
+/* ── Bottom nav — cleaner ── */
+.ff-bottom-nav {
+  background: rgba(13, 15, 18, 0.97) !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+}
+
+.ff-bottom-nav-item {
+  color: var(--text-muted) !important;
+}
+
+.ff-bottom-nav-item-active {
+  color: var(--neon-blue) !important;
+}
+
+.ff-bottom-nav-glow { display: none !important; }
+
+/* ── Workspace panels — professional ── */
+.ff-ws-center-header.ff-card {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.ff-ws-center-header h2 {
+  font-size: var(--text-md) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+.ff-ws-center-header p {
+  font-size: var(--text-xs) !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* ── Nav items — Linear-style ── */
+.ff-ws-nav-item {
+  font-size: var(--text-sm) !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  padding: var(--sp-2) var(--sp-3) !important;
+}
+
+.ff-ws-nav-item:hover {
+  background: var(--glass) !important;
+  color: var(--text-primary) !important;
+}
+
+.ff-ws-nav-item.active {
+  background: rgba(79, 156, 249, 0.1) !important;
+  color: var(--neon-blue) !important;
+  border: none !important;
+}
+
+/* ── Intelligence feed cards — cleaner ── */
+.ff-event-card {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+}
+
+.ff-event-card header {
+  font-size: var(--text-xs) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding-bottom: var(--sp-2) !important;
+  margin-bottom: var(--sp-3) !important;
+}
+
+/* ── Voice panel — professional ── */
+.ff-voice-panel {
+  gap: var(--sp-3) !important;
+}
+
+.ff-voice-status-bar {
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-inset) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.ff-voice-response-card {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ff-voice-response-label {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--text-muted) !important;
+}
+
+.ff-voice-response-text {
+  font-size: var(--text-sm) !important;
+  line-height: 1.65 !important;
+  color: var(--text-prose) !important;
+}
+
+/* ── IdeaCapture — cleaner form ── */
+.ff-idea-hero {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.ff-idea-hero h1 {
+  font-size: var(--text-xl) !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
+  color: var(--text-primary) !important;
+}
+
+.ff-idea-hero p {
+  font-size: var(--text-sm) !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.6 !important;
+}
+
+.ff-idea-form-panel {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.ff-idea-textarea {
+  background: var(--bg-inset) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+  font-size: var(--text-base) !important;
+  line-height: 1.65 !important;
+}
+
+.ff-idea-textarea:focus {
+  border-color: rgba(79, 156, 249, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.08) !important;
+}
+
+/* ── Score ring — cleaner ── */
+.ff-score-ring {
+  background: conic-gradient(
+    var(--neon-blue) calc(var(--score) * 1%),
+    var(--bg-inset) 0
+  ) !important;
+}
+
+/* ── Workspace toolbar ── */
+.ff-workspace-toolbar {
+  background: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: var(--sp-3) var(--sp-5) !important;
+}
+
+.ff-workspace-eyebrow {
+  font-size: var(--text-xs) !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+}
+
+/* ── Mobile tabs ── */
+.ff-ws-mobile-tabs {
+  background: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+.ff-ws-tab-btn {
+  font-size: var(--text-xs) !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.ff-ws-tab-btn.active {
+  color: var(--neon-blue) !important;
+  border-bottom-color: var(--neon-blue) !important;
+  background: transparent !important;
+}
+
+/* ── Landing features section ── */
+.ff-landing-section-title {
+  font-size: clamp(22px, 3vw, 32px) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.ff-section-subtitle {
+  font-size: var(--text-base) !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.65 !important;
+}
+
+/* ── Bento grid cards ── */
+.ff-bento-cell {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: none !important;
+}
+
+.ff-bento-cell:hover {
+  border-color: var(--border-default) !important;
+  background: var(--bg-surface) !important;
+}
+
+/* ── Site footer ── */
+.ff-site-footer {
+  border-top: 1px solid var(--border-subtle) !important;
+  background: transparent !important;
+}
+
+.ff-site-footer-copy {
+  font-size: var(--text-sm) !important;
+  color: var(--text-muted) !important;
+}
+
+.ff-site-footer-link {
+  font-size: var(--text-sm) !important;
+  color: var(--text-muted) !important;
+}
+
+.ff-site-footer-link:hover {
+  color: var(--text-secondary) !important;
+}
+
+/* ── Workspace toast — cleaner ── */
+.ff-workspace-toast {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-md) !important;
+  color: var(--success) !important;
+}
+
+/* ── Modals — cleaner ── */
+.ff-modal-card {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* ── Skeleton — neutral ── */
+.ff-skeleton {
+  background: var(--bg-surface) !important;
+}
+
+/* ── Scrollbars — minimal ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Remove all glow effects ── */
+.ff-voice-status-dot.listening,
+.ff-voice-status-dot.speaking,
+.ff-voice-status-dot.thinking,
+.ff-voice-status-dot.analyzing,
+.ff-voice-status-dot.preparing {
+  box-shadow: none !important;
+}
+
+/* ── Profile button — cleaner ── */
+.ff-topbar-profile-btn {
+  background: var(--glass) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.ff-topbar-profile-btn:hover {
+  background: var(--glass-hover) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* ── Sign in modal ── */
+.ff-signin-google-btn {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+.ff-signin-google-btn:hover {
+  background: var(--bg-overlay) !important;
+}
+
+/* ── Workspace ready banner ── */
+.ff-ws-ready-banner {
+  background: rgba(52, 211, 153, 0.06) !important;
+  border: 1px solid rgba(52, 211, 153, 0.18) !important;
+  color: var(--success) !important;
+  box-shadow: none !important;
 }
