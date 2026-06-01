@@ -1,24 +1,7 @@
 'use client'
 
-/**
- * FOUNDER FALCON — IDEA CAPTURE
- *
- * Two input modes:
- *   "voice" — big mic button, live transcript preview
- *   "text"  — plain textarea with inline mic button for dictation
- *
- * DATA FLOW (no feedback loops):
- *   Voice mode:  speech.transcript → onIdeaChange (one-way, via useEffect)
- *   Text mode:   textarea onChange → onIdeaChange (direct, no speech involvement)
- *   The textarea is a controlled input driven solely by the `idea` prop.
- *   speech.transcript is NEVER fed back into speech.append() or speech.start().
- */
-
 import React, { useEffect, useRef, useState } from 'react'
 import Button from '../Button'
-import Card from '../Card'
-import Panel from '../Panel'
-import AssetImage from '../AssetImage'
 import VoiceStylePicker from './VoiceStylePicker'
 import PipelineModeSelector from './PipelineModeSelector'
 import { useSpeechInput } from '../../hooks/useSpeechInput'
@@ -53,7 +36,7 @@ export default function IdeaCapture({
   onVoiceStyleChange,
 }: IdeaCaptureProps) {
   const [showValidation, setShowValidation] = useState(false)
-  const [inputMode, setInputMode] = useState<'voice' | 'text'>('text')
+  const [inputMode, setInputMode] = useState<'text' | 'voice'>('text')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const speech = useSpeechInput()
 
@@ -61,10 +44,10 @@ export default function IdeaCapture({
   const isEmpty = trimmed.length === 0
   const isTooShort = trimmed.length > 0 && trimmed.length < 10
   const isInvalid = isEmpty || isTooShort
+  const isListening = speech.phase === 'listening'
+  const isProcessing = speech.phase === 'processing'
 
-  // ── Voice → idea sync ────────────────────────────────────────────────────────
-  // Only runs when speech.transcript changes (i.e. during/after recording).
-  // The textarea onChange does NOT touch speech at all — no feedback loop.
+  // Voice → idea sync
   const prevTranscriptRef = useRef('')
   useEffect(() => {
     if (speech.transcript === prevTranscriptRef.current) return
@@ -75,15 +58,13 @@ export default function IdeaCapture({
     }
   }, [speech.transcript, onIdeaChange, showValidation])
 
-  // ── Auto-switch to text mode when transcript is finalized ────────────────────
+  // Auto-switch to text when transcript ready
   useEffect(() => {
     if (speech.phase === 'ready' && speech.transcript) {
       setInputMode('text')
       setTimeout(() => textareaRef.current?.focus(), 80)
     }
   }, [speech.phase, speech.transcript])
-
-  // ── Handlers ─────────────────────────────────────────────────────────────────
 
   function handleSubmit() {
     if (isInvalid) { setShowValidation(true); return }
@@ -94,24 +75,13 @@ export default function IdeaCapture({
 
   function handleMicClick() {
     if (!speech.isSupported) return
-    if (speech.phase === 'listening') {
+    if (isListening) {
       speech.stop()
     } else {
-      // Clear previous transcript and idea before starting a new session
       speech.clear()
       onIdeaChange('')
       speech.start()
     }
-  }
-
-  function handleSwitchToText() {
-    if (speech.phase === 'listening') speech.stop()
-    setInputMode('text')
-    setTimeout(() => textareaRef.current?.focus(), 80)
-  }
-
-  function handleSwitchToVoice() {
-    setInputMode('voice')
   }
 
   function handleClear() {
@@ -120,43 +90,52 @@ export default function IdeaCapture({
     setShowValidation(false)
   }
 
-  const isListening  = speech.phase === 'listening'
-  const isProcessing = speech.phase === 'processing'
-
   return (
-    <div className="ff-idea-capture">
+    <div className="ff-ic-root">
 
-      {/* ── Hero card ── */}
-      <Card className="ff-idea-hero">
-        <div className="ff-idea-hero-top">
-          <span className="ff-logo-mark-wrap ff-idea-logo">
-            <AssetImage asset="logo" size={22} alt="Founder Falcon" brand />
-          </span>
-          <div>
-            <h1>Your AI Co-Founder</h1>
-            <p>
-              Speak or type your startup idea. Falcon validates the market, generates a PRD,
-              builds your roadmap, and briefs you like a real co-founder.
-            </p>
-          </div>
+      {/* ── Header ── */}
+      <div className="ff-ic-header">
+        <div className="ff-ic-logo" aria-hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
         </div>
-      </Card>
+        <div>
+          <h1 className="ff-ic-title">Describe your startup idea</h1>
+          <p className="ff-ic-subtitle">Falcon will validate the market, generate a PRD, roadmap, and brief you like a co-founder.</p>
+        </div>
+      </div>
 
-      {/* ── Main input panel ── */}
-      <Panel title="Submit Your Startup Idea" className="ff-idea-form-panel">
-        <div className="ff-idea-form">
+      {/* ── Input card ── */}
+      <div className="ff-ic-card">
 
-          {/* ── Input mode toggle ── */}
-          <div className="ff-idea-mode-toggle" role="tablist" aria-label="Input method">
+        {/* Mode toggle */}
+        <div className="ff-ic-mode-row">
+          <div className="ff-ic-mode-tabs" role="tablist">
             <button
               role="tab"
               type="button"
-              className={`ff-idea-mode-tab${inputMode === 'voice' ? ' ff-idea-mode-tab--active' : ''}`}
-              aria-selected={inputMode === 'voice'}
-              onClick={handleSwitchToVoice}
+              className={`ff-ic-tab${inputMode === 'text' ? ' active' : ''}`}
+              aria-selected={inputMode === 'text'}
+              onClick={() => { setInputMode('text'); setTimeout(() => textareaRef.current?.focus(), 60) }}
               disabled={isLoading}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <polyline points="4 7 4 4 20 4 20 7" />
+                <line x1="9" y1="20" x2="15" y2="20" />
+                <line x1="12" y1="4" x2="12" y2="20" />
+              </svg>
+              Type
+            </button>
+            <button
+              role="tab"
+              type="button"
+              className={`ff-ic-tab${inputMode === 'voice' ? ' active' : ''}`}
+              aria-selected={inputMode === 'voice'}
+              onClick={() => setInputMode('voice')}
+              disabled={isLoading}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <rect x="9" y="2" width="6" height="12" rx="3" />
                 <path d="M5 10a7 7 0 0 0 14 0" />
                 <line x1="12" y1="19" x2="12" y2="22" />
@@ -164,236 +143,225 @@ export default function IdeaCapture({
               </svg>
               Speak
             </button>
-            <button
-              role="tab"
-              type="button"
-              className={`ff-idea-mode-tab${inputMode === 'text' ? ' ff-idea-mode-tab--active' : ''}`}
-              aria-selected={inputMode === 'text'}
-              onClick={handleSwitchToText}
+          </div>
+          <span className="ff-ic-hint">
+            <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to generate
+          </span>
+        </div>
+
+        {/* ── TEXT MODE ── */}
+        {inputMode === 'text' && (
+          <div className="ff-ic-text-area-wrap">
+            <textarea
+              ref={textareaRef}
+              id="startup-idea"
+              className={`ff-ic-textarea${showValidation && isInvalid ? ' ff-ic-textarea--error' : ''}`}
+              value={idea}
+              onChange={e => {
+                onIdeaChange(e.target.value)
+                if (showValidation && e.target.value.trim().length >= 10) setShowValidation(false)
+              }}
+              onKeyDown={onKeyDown}
+              placeholder="e.g. An AI platform that helps students find scholarships abroad…"
               disabled={isLoading}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="2" y="6" width="20" height="12" rx="2" />
-                <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" />
-              </svg>
-              Type
-            </button>
-          </div>
-
-          {/* ══ VOICE MODE ══════════════════════════════════════════════════════ */}
-          {inputMode === 'voice' && (
-            <div className="ff-idea-voice-input" aria-live="polite">
-
-              <div className="ff-idea-mic-stage">
-                {isListening && (
-                  <>
-                    <span className="ff-idea-mic-ring ff-idea-mic-ring-1" aria-hidden="true" />
-                    <span className="ff-idea-mic-ring ff-idea-mic-ring-2" aria-hidden="true" />
-                    <span className="ff-idea-mic-ring ff-idea-mic-ring-3" aria-hidden="true" />
-                  </>
+              rows={5}
+              aria-label="Your startup idea"
+              aria-invalid={showValidation && isInvalid}
+            />
+            {speech.isSupported && (
+              <button
+                type="button"
+                className={`ff-ic-inline-mic${isListening ? ' active' : ''}`}
+                onClick={handleMicClick}
+                disabled={isLoading || isProcessing}
+                aria-label={isListening ? 'Stop recording' : 'Dictate with microphone'}
+                title={isListening ? 'Stop recording' : 'Dictate'}
+              >
+                {isListening ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <rect x="5" y="5" width="14" height="14" rx="2" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <rect x="9" y="2" width="6" height="12" rx="3" />
+                    <path d="M5 10a7 7 0 0 0 14 0" />
+                    <line x1="12" y1="19" x2="12" y2="22" />
+                    <line x1="8" y1="22" x2="16" y2="22" />
+                  </svg>
                 )}
-
-                <button
-                  type="button"
-                  className={[
-                    'ff-idea-big-mic',
-                    isListening  ? 'ff-idea-big-mic--listening'  : '',
-                    isProcessing ? 'ff-idea-big-mic--processing' : '',
-                    speech.phase === 'ready' && trimmed ? 'ff-idea-big-mic--ready' : '',
-                    !speech.isSupported || isLoading ? 'ff-idea-big-mic--disabled' : '',
-                  ].filter(Boolean).join(' ')}
-                  onClick={handleMicClick}
-                  disabled={!speech.isSupported || isLoading || isProcessing}
-                  aria-label={isListening ? 'Stop recording' : 'Start voice input'}
-                  aria-pressed={isListening}
-                  title={!speech.isSupported ? 'Speech recognition requires Chrome or Edge' : undefined}
-                >
-                  {isProcessing ? (
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round">
-                        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
-                      </circle>
-                    </svg>
-                  ) : isListening ? (
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <rect x="5" y="5" width="14" height="14" rx="2" />
-                    </svg>
-                  ) : (
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="9" y="2" width="6" height="12" rx="3" />
-                      <path d="M5 10a7 7 0 0 0 14 0" />
-                      <line x1="12" y1="19" x2="12" y2="22" />
-                      <line x1="8" y1="22" x2="16" y2="22" />
-                    </svg>
-                  )}
-                </button>
+              </button>
+            )}
+            {isListening && (
+              <div className="ff-ic-listening-bar" aria-live="polite">
+                <span className="ff-ic-listening-dot" aria-hidden />
+                Listening…
               </div>
-
-              <p className={`ff-idea-voice-status ff-idea-voice-status--${speech.phase}`}>
-                {isListening && <span className="ff-idea-voice-dot" aria-hidden="true" />}
-                {isListening    ? 'Listening… speak your idea'
-                : isProcessing  ? 'Processing…'
-                : speech.phase === 'ready' && trimmed ? 'Transcript ready — review below'
-                : speech.phase === 'error' ? (speech.errorMessage ?? 'Microphone error')
-                : !speech.isSupported ? 'Speech input requires Chrome or Edge'
-                : 'Tap to speak your startup idea'}
-              </p>
-
-              {trimmed && (
-                <div className="ff-idea-transcript-preview">
-                  <p className="ff-idea-transcript-text">{trimmed}</p>
-                  <div className="ff-idea-transcript-actions">
-                    <button type="button" className="ff-idea-transcript-edit" onClick={handleSwitchToText}>
-                      Edit
-                    </button>
-                    <button type="button" className="ff-idea-transcript-clear" onClick={handleClear} aria-label="Clear and re-record">
-                      Re-record
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {showValidation && isEmpty   && <p className="ff-idea-error" role="alert">Tap the mic and speak your startup idea first.</p>}
-              {showValidation && isTooShort && <p className="ff-idea-error" role="alert">Too short — speak a bit more detail.</p>}
-            </div>
-          )}
-
-          {/* ══ TEXT MODE ═══════════════════════════════════════════════════════ */}
-          {inputMode === 'text' && (
-            <div className="ff-idea-text-input">
-
-              <div className="ff-idea-input-header">
-                <label htmlFor="startup-idea" className="ff-idea-label">Your startup idea</label>
-                <p className="ff-idea-hint" id="startup-idea-hint">
-                  Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to generate
-                </p>
-              </div>
-
-              <div className="ff-idea-textarea-wrap">
-                {/*
-                  CONTROLLED INPUT — onChange writes e.target.value directly to
-                  parent state via onIdeaChange. No speech methods are called here.
-                  This is the only place that drives the `idea` value when typing.
-                */}
-                <textarea
-                  ref={textareaRef}
-                  id="startup-idea"
-                  className={`ff-idea-textarea${showValidation && isInvalid ? ' ff-input-error' : ''}`}
-                  value={idea}
-                  onChange={e => {
-                    onIdeaChange(e.target.value)
-                    if (showValidation && e.target.value.trim().length >= 10) {
-                      setShowValidation(false)
-                    }
-                  }}
-                  onKeyDown={onKeyDown}
-                  placeholder="e.g. An AI platform that helps students find scholarships abroad…"
-                  disabled={isLoading}
-                  rows={6}
-                  aria-invalid={showValidation && isInvalid}
-                  aria-describedby="startup-idea-hint"
-                />
-
-                {/* Inline mic button — starts a new voice session, result flows into idea */}
-                {speech.isSupported && (
-                  <button
-                    type="button"
-                    className={`ff-idea-inline-mic${isListening ? ' ff-idea-inline-mic--listening' : ''}`}
-                    onClick={handleMicClick}
-                    disabled={isLoading || isProcessing}
-                    aria-label={isListening ? 'Stop recording' : 'Dictate with microphone'}
-                    title={isListening ? 'Stop recording' : 'Dictate with microphone'}
-                  >
-                    {isListening ? (
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <rect x="5" y="5" width="14" height="14" rx="2" />
-                      </svg>
-                    ) : (
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <rect x="9" y="2" width="6" height="12" rx="3" />
-                        <path d="M5 10a7 7 0 0 0 14 0" />
-                        <line x1="12" y1="19" x2="12" y2="22" />
-                        <line x1="8" y1="22" x2="16" y2="22" />
-                      </svg>
-                    )}
-                  </button>
-                )}
-              </div>
-
-              {isListening && (
-                <p className="ff-idea-mic-status ff-idea-mic-status--listening" aria-live="polite">
-                  <span className="ff-idea-mic-pulse" aria-hidden="true" />
-                  Listening… speak your idea
-                </p>
-              )}
-
-              {showValidation && isEmpty    && <p className="ff-idea-error" role="alert">Enter or speak your startup idea before generating.</p>}
-              {showValidation && isTooShort && <p className="ff-idea-error" role="alert">Add a bit more detail (at least 10 characters).</p>}
-
-              <div className="ff-idea-char-count" aria-live="polite">
-                <span className={trimmed.length > 1800 ? 'ff-idea-char-count--warn' : ''}>
-                  {trimmed.length} / 2000
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* ── Pipeline mode ── */}
-          <div className="ff-idea-mode-block">
-            <span className="ff-idea-label">Pipeline mode</span>
-            <PipelineModeSelector value={mode} onChange={onModeChange} />
-          </div>
-
-          {/* ── Voice output toggle ── */}
-          <div className="ff-idea-voice-block">
-            <div className="ff-idea-voice-head">
-              <span className="ff-idea-label">Murf voice advisor</span>
-              <label className="ff-voice-toggle-row ff-voice-toggle-inline">
-                <span>{voiceEnabled ? 'On' : 'Off'}</span>
-                <button
-                  type="button"
-                  className={`ff-switch${voiceEnabled ? ' ff-switch-on' : ''}`}
-                  onClick={() => onVoiceEnabledChange(!voiceEnabled)}
-                  aria-pressed={voiceEnabled}
-                >
-                  <span className="ff-switch-thumb" />
-                </button>
-              </label>
-            </div>
-            {voiceEnabled ? (
-              <VoiceStylePicker value={voiceStyle} onChange={onVoiceStyleChange} label="Female voice" id="idea-voice-style" />
-            ) : (
-              <p className="ff-idea-voice-off">Enable voice to hear your founder briefing after analysis.</p>
             )}
           </div>
+        )}
 
-          {/* ── Submit ── */}
-          <div className="ff-idea-actions">
-            <Button variant="primary" onClick={handleSubmit} disabled={isLoading} className="ff-idea-submit-btn">
-              {isLoading ? 'Analyzing…' : 'Generate Startup Package'}
-            </Button>
+        {/* ── VOICE MODE ── */}
+        {inputMode === 'voice' && (
+          <div className="ff-ic-voice-stage" aria-live="polite">
+            <button
+              type="button"
+              className={[
+                'ff-ic-mic-btn',
+                isListening ? 'ff-ic-mic-btn--listening' : '',
+                isProcessing ? 'ff-ic-mic-btn--processing' : '',
+                speech.phase === 'ready' && trimmed ? 'ff-ic-mic-btn--ready' : '',
+                !speech.isSupported || isLoading ? 'ff-ic-mic-btn--disabled' : '',
+              ].filter(Boolean).join(' ')}
+              onClick={handleMicClick}
+              disabled={!speech.isSupported || isLoading || isProcessing}
+              aria-label={isListening ? 'Stop recording' : 'Start voice input'}
+              aria-pressed={isListening}
+            >
+              {isListening && (
+                <>
+                  <span className="ff-ic-mic-ring ff-ic-mic-ring-1" aria-hidden />
+                  <span className="ff-ic-mic-ring ff-ic-mic-ring-2" aria-hidden />
+                </>
+              )}
+              {isProcessing ? (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+                  </circle>
+                </svg>
+              ) : isListening ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <rect x="5" y="5" width="14" height="14" rx="3" />
+                </svg>
+              ) : (
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <rect x="9" y="2" width="6" height="12" rx="3" />
+                  <path d="M5 10a7 7 0 0 0 14 0" />
+                  <line x1="12" y1="19" x2="12" y2="22" />
+                  <line x1="8" y1="22" x2="16" y2="22" />
+                </svg>
+              )}
+            </button>
+
+            <p className="ff-ic-voice-label">
+              {isListening ? 'Listening — speak your idea'
+                : isProcessing ? 'Processing…'
+                : speech.phase === 'ready' && trimmed ? 'Transcript ready'
+                : speech.phase === 'error' ? (speech.errorMessage ?? 'Microphone error')
+                : !speech.isSupported ? 'Requires Chrome or Edge'
+                : 'Tap to speak'}
+            </p>
+
+            {trimmed && (
+              <div className="ff-ic-transcript">
+                <p>{trimmed}</p>
+                <div className="ff-ic-transcript-actions">
+                  <button type="button" onClick={() => setInputMode('text')}>Edit</button>
+                  <button type="button" onClick={handleClear}>Re-record</button>
+                </div>
+              </div>
+            )}
           </div>
+        )}
 
+        {/* Validation errors */}
+        {showValidation && isEmpty && (
+          <p className="ff-ic-error" role="alert">Enter or speak your startup idea first.</p>
+        )}
+        {showValidation && isTooShort && (
+          <p className="ff-ic-error" role="alert">Add a bit more detail (at least 10 characters).</p>
+        )}
+
+        {/* Char count */}
+        {inputMode === 'text' && (
+          <div className="ff-ic-char-count">
+            <span className={trimmed.length > 1800 ? 'warn' : ''}>{trimmed.length} / 2000</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Settings row ── */}
+      <div className="ff-ic-settings">
+
+        {/* Pipeline mode */}
+        <div className="ff-ic-setting-group">
+          <span className="ff-ic-setting-label">Pipeline</span>
+          <PipelineModeSelector value={mode} onChange={onModeChange} />
         </div>
-      </Panel>
+
+        {/* Voice toggle */}
+        <div className="ff-ic-setting-group ff-ic-setting-group--voice">
+          <span className="ff-ic-setting-label">Voice advisor</span>
+          <div className="ff-ic-voice-row">
+            <button
+              type="button"
+              className={`ff-switch${voiceEnabled ? ' ff-switch-on' : ''}`}
+              onClick={() => onVoiceEnabledChange(!voiceEnabled)}
+              aria-pressed={voiceEnabled}
+              aria-label={voiceEnabled ? 'Disable voice' : 'Enable voice'}
+            >
+              <span className="ff-switch-thumb" />
+            </button>
+            {voiceEnabled && (
+              <VoiceStylePicker value={voiceStyle} onChange={onVoiceStyleChange} label="" id="ic-voice-style" />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Submit ── */}
+      <Button
+        variant="primary"
+        onClick={handleSubmit}
+        disabled={isLoading}
+        className="ff-ic-submit"
+      >
+        {isLoading ? (
+          <span className="ff-ic-submit-loading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" />
+              </circle>
+            </svg>
+            Analyzing…
+          </span>
+        ) : (
+          <>
+            Generate Startup Package
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </>
+        )}
+      </Button>
 
       {/* ── Feature pills ── */}
-      <div className="ff-idea-features">
-        <Card>
-          <span className="ff-icon-box"><AssetImage asset="prd" size={24} alt="" /></span>
-          <strong>Validation + PRD</strong>
-          <span>Structured documents, not raw JSON</span>
-        </Card>
-        <Card>
-          <span className="ff-icon-box"><AssetImage asset="waveform" size={24} alt="" /></span>
-          <strong>Voice Briefing</strong>
-          <span>Murf AI advisor with TTS fallback</span>
-        </Card>
-        <Card>
-          <span className="ff-icon-box"><AssetImage asset="roadmap" size={24} alt="" /></span>
-          <strong>Live Roadmap</strong>
-          <span>Phased execution plan</span>
-        </Card>
+      <div className="ff-ic-pills">
+        <span className="ff-ic-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Market validation
+        </span>
+        <span className="ff-ic-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Full PRD
+        </span>
+        <span className="ff-ic-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Execution roadmap
+        </span>
+        <span className="ff-ic-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Voice briefing
+        </span>
       </div>
 
     </div>

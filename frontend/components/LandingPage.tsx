@@ -46,6 +46,13 @@ const FEATURES: Array<{
   }
 ]
 
+const STATS = [
+  { value: '< 60s', label: 'Full analysis' },
+  { value: '4 docs', label: 'Auto-generated' },
+  { value: '8.4/10', label: 'Avg viability score' },
+  { value: '100%', label: 'AI-powered' },
+]
+
 export default function LandingPage() {
   const [activeFeature, setActiveFeature] = useState<FeatureId | null>(null)
 
@@ -79,10 +86,14 @@ export default function LandingPage() {
     <div className="ff-landing-page">
       <AmbientBackground />
       <main className="ff-landing">
+
+        {/* ── HERO ── */}
         <section className="ff-landing-hero">
           <div className="ff-landing-hero-copy">
             <span className="ff-eyebrow">AI Startup Operating System</span>
-            <h1 className="ff-hero-title">Your AI co-founder,<br />from idea to launch</h1>
+            <h1 className="ff-hero-title">
+              Your AI co-founder,<br />from idea to launch
+            </h1>
             <p className="ff-hero-lead">
               Speak or type your startup idea. Get instant validation, a full PRD,
               roadmap, and an AI advisor that remembers your project — all in one workspace.
@@ -115,6 +126,16 @@ export default function LandingPage() {
                 <small>PRD + Roadmap + Validation</small>
               </div>
             </div>
+
+            {/* Stats row */}
+            <div className="ff-hero-stats-row">
+              {STATS.map(s => (
+                <div key={s.label} className="ff-hero-stat">
+                  <span className="ff-hero-stat-value">{s.value}</span>
+                  <span className="ff-hero-stat-label">{s.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <aside id="product-demo" className="ff-demo-aside">
@@ -122,9 +143,13 @@ export default function LandingPage() {
           </aside>
         </section>
 
+        {/* ── HOW IT WORKS — removed per design ── */}
+
+        {/* ── FEATURES ── */}
         <section className="ff-landing-features">
           <div className="ff-landing-features-body">
             <div className="ff-landing-features-header">
+              <span className="ff-section-label">What you get</span>
               <h2 className="ff-landing-section-title">
                 From idea to execution — in one workspace
               </h2>
@@ -143,15 +168,30 @@ export default function LandingPage() {
               }}
             />
           </div>
-
-          <SiteFooter />
         </section>
 
-        <FeatureInsightModal
-          featureId={activeFeature}
-          onClose={() => setActiveFeature(null)}
-        />
+        {/* ── CTA BANNER ── */}
+        <section className="ff-landing-cta-banner">
+          <div className="ff-landing-cta-inner">
+            <h2 className="ff-landing-cta-title">Ready to validate your idea?</h2>
+            <p className="ff-landing-cta-sub">
+              No credit card. No setup. Just your idea and 60 seconds.
+            </p>
+            <Link href="/workspace" className="ff-cta-link">
+              <Button variant="primary" className="ff-btn-lg">
+                Launch the workspace →
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        <SiteFooter />
       </main>
+
+      <FeatureInsightModal
+        featureId={activeFeature}
+        onClose={() => setActiveFeature(null)}
+      />
     </div>
   )
 }

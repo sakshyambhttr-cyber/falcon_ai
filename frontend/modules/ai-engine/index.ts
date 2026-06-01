@@ -237,7 +237,10 @@ Return a single valid JSON object. Do NOT wrap the JSON in markdown code blocks 
   })
 
   if (!apiResponse.ok) {
-    throw new Error(`Gemini API failed with status ${apiResponse.status}`)
+    const errorBody = await apiResponse.text().catch(() => '(unreadable)')
+    console.error(`[Gemini/ai-engine] HTTP ${apiResponse.status} from Gemini API`)
+    console.error('[Gemini/ai-engine] Response body:', errorBody.slice(0, 500))
+    throw new Error(`Gemini API failed with status ${apiResponse.status}: ${errorBody.slice(0, 200)}`)
   }
 
   const data = await apiResponse.json()
@@ -258,15 +261,28 @@ export async function generateAIEngineResponse(input: string): Promise<AIEngineR
   const idea = sanitizeStartupIdea(input)
   const apiKey = process.env.GEMINI_API_KEY
 
-  if (!isPlaceholderApiKey(apiKey)) {
-    try {
-      return await callGemini(idea, apiKey!)
-    } catch (error) {
-      console.error('Gemini API call failed, falling back to local engine:', error)
-    }
+  if (!apiKey || apiKey.length < 8) {
+    console.warn('[Gemini/ai-engine] GEMINI_API_KEY is missing or too short — using mock response')
+    return generateMockAIEngineResponse(idea)
   }
-  
-  return generateMockAIEngineResponse(idea)
+
+  if (isPlaceholderApiKey(apiKey)) {
+    console.warn('[Gemini/ai-engine] GEMINI_API_KEY looks like a placeholder — using mock response')
+    return generateMockAIEngineResponse(idea)
+  }
+
+  try {
+    console.log('[Gemini/ai-engine] Calling Gemini API with key prefix:', apiKey.slice(0, 8) + '...')
+    const result = await callGemini(idea, apiKey)
+    console.log('[Gemini/ai-engine] ✓ Gemini responded successfully')
+    return result
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('[Gemini/ai-engine] ✗ Gemini API call failed:', msg)
+    console.error('[Gemini/ai-engine] Key prefix used:', apiKey.slice(0, 8) + '...')
+    console.error('[Gemini/ai-engine] Falling back to mock response')
+    return generateMockAIEngineResponse(idea)
+  }
 }
 
 export async function analyzeIdea(input: string): Promise<AIEngineResponse> {

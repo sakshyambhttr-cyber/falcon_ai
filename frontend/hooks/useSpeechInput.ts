@@ -67,6 +67,7 @@ export function useSpeechInput(): SpeechInputState {
   const [transcript, setTranscript] = useState('')
   const [phase, setPhase] = useState<SpeechInputPhase>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isSupported, setIsSupported] = useState(false)
 
   // Single recognition instance — never recreated mid-session
   const recognitionRef = useRef<SR | null>(null)
@@ -75,8 +76,10 @@ export function useSpeechInput(): SpeechInputState {
   // Guards against double-start (StrictMode, rapid clicks)
   const activeRef = useRef(false)
 
-  // Detect support once — stable across renders
-  const isSupported = useRef(getSpeechRecognitionClass() !== null)
+  // Detect support after mount so server and client render the same initial markup
+  useEffect(() => {
+    setIsSupported(getSpeechRecognitionClass() !== null)
+  }, [])
 
   // ─── CLEANUP ON UNMOUNT ──────────────────────────────────────────────────────
 
@@ -106,18 +109,19 @@ export function useSpeechInput(): SpeechInputState {
         return
       }
 
-      // Proactively request microphone permission via getUserMedia. Some
-      // browsers only show a permission prompt when media is requested and
-      // this improves reliability for SpeechRecognition start(). If the user
-      // denies access, show a helpful message.
-      try {
-        if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          await navigator.mediaDevices.getUserMedia({ audio: true })
+      // Check if permission is already granted before trying getUserMedia.
+      // Only call getUserMedia if we don't know the state — avoids double prompts.
+      if (typeof navigator !== 'undefined' && navigator.permissions) {
+        try {
+          const status = await navigator.permissions.query({ name: 'microphone' as PermissionName })
+          if (status.state === 'denied') {
+            setPhase('error')
+            setErrorMessage('Microphone access is blocked. Click the lock icon in your browser address bar and allow microphone access, then refresh.')
+            return
+          }
+        } catch {
+          // permissions API not available — proceed and let SpeechRecognition handle it
         }
-      } catch (err) {
-        setPhase('error')
-        setErrorMessage('Microphone permission was denied. Allow microphone access in your browser settings and try again.')
-        return
       }
 
     // Prevent double-start
@@ -180,7 +184,7 @@ export function useSpeechInput(): SpeechInputState {
 
       if (event.error === 'not-allowed' || event.error === 'permission-denied') {
         setPhase('error')
-        setErrorMessage('Microphone access was denied. Allow microphone permissions in your browser settings.')
+        setErrorMessage('Microphone access was denied. Click the lock icon in your browser address bar, allow microphone, then refresh the page.')
         return
       }
 
@@ -242,7 +246,7 @@ export function useSpeechInput(): SpeechInputState {
     transcript,
     phase,
     errorMessage,
-    isSupported: isSupported.current,
+    isSupported,
     start,
     stop,
     clear,

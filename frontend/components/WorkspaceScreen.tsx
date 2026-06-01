@@ -229,61 +229,13 @@ export default function WorkspaceScreen() {
     }
   }, [voiceStyle, stopSpeaking])
 
-  // ─── GENERATE + SPEAK ADVISOR RESPONSE ──────────────────────────────────────
-
-  /**
-   * generateAndSpeak() — used for initial pipeline completion briefing.
-   *
-   * Routes through Gemini via /api/advisor/chat so the response is
-   * dynamic and context-aware, not a static template.
-   * Falls back to the local template only if Gemini fails.
-   */
-  const generateAndSpeak = useCallback(async (isReplay = false) => {
-    if (!voiceEnabled) return
-
-    // Don't re-read if already speaking or streaming
-    if (voicePhase === 'speaking' || voicePhase === 'preparing' || streamingAdvisor.isStreaming) return
-
-    stopSpeaking()
-    streamingAdvisor.abort()
-    setVoiceError(null)
-    setVoiceText('')
-    setVoicePhase('thinking')
-
-    // Build a context-aware question for the initial briefing
-    const briefingQuestion = isReplay
-      ? `Give me a fresh take on my startup — different from what you said before. Focus on the most important thing I should do next.`
-      : `I just got my startup analysis back. Give me your honest advisor take — what's the most important thing I need to know about this opportunity?`
-
-    const context = projectMemory.getContextForAdvisor()
-    if (!context.idea) context.idea = idea
-
-    // Record as a system turn so history tracks it
-    projectMemory.addTurn('user', briefingQuestion)
-
-    await streamingAdvisor.ask(briefingQuestion, context)
-    // onComplete callback in useStreamingAdvisor handles speak()
-  }, [voiceEnabled, voicePhase, idea, projectMemory, stopSpeaking, streamingAdvisor])
-
-  // ─── VOICE CONTROLS ─────────────────────────────────────────────────────────
-
-  function handlePlaySummary() {
-    void generateAndSpeak(false)
-  }
-
-  function handleReplaySummary() {
-    void generateAndSpeak(true)
-  }
-
   // ─── PHASE 9: STREAMING ADVISOR HOOK ────────────────────────────────────────
 
   const streamingAdvisor = useStreamingAdvisor({
     onToken: (_token, accumulated) => {
-      // Show progressive text in the voice panel as tokens arrive
       setVoiceText(accumulated)
     },
     onComplete: (finalAnswer) => {
-      // Full answer received — record in memory and speak it
       projectMemory.addTurn('advisor', finalAnswer)
       setVoiceText(finalAnswer)
       void speak(finalAnswer)
@@ -295,6 +247,52 @@ export default function WorkspaceScreen() {
       setTimeout(() => setVoiceError(null), 4000)
     }
   })
+
+  const handleNewIdea = useCallback(() => {
+    stopSpeaking()
+    streamingAdvisor.abort()
+    reset()
+    spokeOnComplete.current = false
+    setHasSpokenSummary(false)
+    setVoiceText('')
+    setVoiceError(null)
+    setIntelligenceOverride(null)
+    setWorkspaceToast(null)
+    projectMemory.clearMemory()
+  }, [projectMemory, reset, stopSpeaking, streamingAdvisor])
+
+  // ─── GENERATE + SPEAK ADVISOR RESPONSE ──────────────────────────────────────
+
+  const generateAndSpeak = useCallback(async (isReplay = false) => {
+    if (!voiceEnabled) return
+    if (voicePhase === 'speaking' || voicePhase === 'preparing' || streamingAdvisor.isStreaming) return
+
+    stopSpeaking()
+    streamingAdvisor.abort()
+    setVoiceError(null)
+    setVoiceText('')
+    setVoicePhase('thinking')
+
+    const briefingQuestion = isReplay
+      ? `Give me a fresh take on my startup — different from what you said before. Focus on the most important thing I should do next.`
+      : `I just got my startup analysis back. Give me your honest advisor take — what's the most important thing I need to know about this opportunity?`
+
+    const context = projectMemory.getContextForAdvisor()
+    if (!context.idea) context.idea = idea
+
+    projectMemory.addTurn('user', briefingQuestion)
+    await streamingAdvisor.ask(briefingQuestion, context)
+  }, [voiceEnabled, voicePhase, idea, projectMemory, stopSpeaking, streamingAdvisor])
+
+  // ─── VOICE CONTROLS ─────────────────────────────────────────────────────────
+
+  function handlePlaySummary() {
+    void generateAndSpeak(false)
+  }
+
+  function handleReplaySummary() {
+    void generateAndSpeak(true)
+  }
 
   // ─── SYNC STREAMING STATE → VOICE PHASE (Phase 9) ──────────────────────────
 
@@ -466,18 +464,7 @@ export default function WorkspaceScreen() {
               <button
                 type="button"
                 className="ff-workspace-new-idea ff-btn ff-btn-outline"
-                onClick={() => {
-                  stopSpeaking()
-                  streamingAdvisor.abort()
-                  reset()
-                  spokeOnComplete.current = false
-                  setHasSpokenSummary(false)
-                  setVoiceText('')
-                  setVoiceError(null)
-                  setIntelligenceOverride(null)
-                  setWorkspaceToast(null)
-                  projectMemory.clearMemory()
-                }}
+                onClick={handleNewIdea}
                 aria-label="Start a new idea"
               >
                 ← New Idea
@@ -519,6 +506,7 @@ export default function WorkspaceScreen() {
             onStopSpeaking={stopSpeaking}
             onAskFollowUp={handleAskFollowUp}
             onExport={exportDocuments}
+            onNewIdea={handleNewIdea}
             voiceConversationMode={voiceConversationMode}
             onToggleConversationMode={(active) => {
               setVoiceConversationMode(active)
