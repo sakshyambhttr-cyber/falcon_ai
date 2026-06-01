@@ -19,30 +19,30 @@ const FEATURES: Array<{
   {
     id: 'scopes',
     asset: 'ai',
-    title: 'Instant AI Scopes',
+    title: 'Market Validation',
     description:
-      'Challenge assumptions, analyze global target audiences, and receive structured market validation scores.'
+      'Get a viability score, TAM estimate, and competitive landscape for any startup idea in seconds.'
   },
   {
     id: 'prd',
     asset: 'global',
-    title: 'Detailed PRDs',
+    title: 'Product Requirements',
     description:
-      'Generate production-grade product requirement specifications with problem statements, solutions, and success metrics.'
+      'Auto-generate a structured PRD with problem statement, user stories, features, and success metrics.'
   },
   {
     id: 'tech-spec',
     asset: 'document',
-    title: 'Technical Spec Documents',
+    title: 'Technical Architecture',
     description:
-      'Examine clean architectural blueprints, complete database schemas, system modules, and exact tech stack models.'
+      'Receive a build-ready architecture blueprint — system modules, database schema, and tech stack.'
   },
   {
     id: 'roadmap',
     asset: 'roadmap',
-    title: 'Iterative Roadmaps',
+    title: 'Execution Roadmap',
     description:
-      'Map task-based milestones across structured phases with interactive checks to execute concepts seamlessly.'
+      'Phase-based milestones from discovery to launch, with actionable tasks at every step.'
   }
 ]
 
@@ -126,10 +126,10 @@ export default function LandingPage() {
           <div className="ff-landing-features-body">
             <div className="ff-landing-features-header">
               <h2 className="ff-landing-section-title">
-                Everything you need to go from idea to execution
+                From idea to execution — in one workspace
               </h2>
               <p className="ff-section-subtitle">
-                One conversation. Fully comprehensive startup deliverables. Tap a card to ask AI how it works.
+                Click any card to ask Falcon how it works.
               </p>
             </div>
 

@@ -4698,15 +4698,14 @@ body.ff-nav-menu-open {
   }
 }
 
-/* ── RESPONSIVE — DESKTOP COMPACT LANDING (>=1024px) ─────── */
+/* ── Redesign: hero title — override the large desktop size ── */
 @media (min-width: 1024px) {
-  .ff-landing-page {
-    scroll-snap-type: y mandatory;
+  .ff-hero-title {
+    font-size: clamp(36px, 4vw, 52px) !important;
+    max-width: 16ch !important;
+    line-height: 1.1 !important;
   }
-
-  .ff-landing-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(400px, 580px);
-    align-items: center;
+}
     min-height: calc(100dvh - var(--ff-topbar-h) - var(--ff-bottomnav-h) - env(safe-area-inset-bottom, 0px));
     padding-top: var(--sp-4);
     padding-bottom: var(--sp-4);
@@ -7308,4 +7307,282 @@ button.ff-btn-primary {
   border: 1px solid rgba(52, 211, 153, 0.18) !important;
   color: var(--success) !important;
   box-shadow: none !important;
+}
+
+
+/* ============================================================
+   AMBIENT BACKGROUND — SUBTLE DOT GRID (v2)
+   ============================================================ */
+
+.ff-ambient-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ff-ambient-dot-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* Remove old ambient elements */
+.ff-ambient-bg-grid,
+.ff-ambient-bg-glow,
+.ff-ambient-bg-glow-a,
+.ff-ambient-bg-glow-b,
+.ff-ambient-bg-scanline {
+  display: none !important;
+}
+
+/* ============================================================
+   ABOUT PAGE — PROFESSIONAL PRODUCT PAGE
+   ============================================================ */
+
+.ff-about-page {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Hero ── */
+.ff-about-hero {
+  padding: var(--sp-8) var(--sp-5) var(--sp-7);
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  z-index: 1;
+}
+
+.ff-about-hero-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.ff-about-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.ff-about-lead {
+  font-size: var(--text-md);
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 520px;
+}
+
+.ff-about-cta-row {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--sp-2);
+}
+
+/* ── Sections ── */
+.ff-about-section {
+  padding: var(--sp-7) var(--sp-5);
+  border-bottom: 1px solid var(--border-subtle);
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.ff-about-section-header {
+  margin-bottom: var(--sp-6);
+}
+
+.ff-about-section-header h2 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-2);
+}
+
+.ff-about-section-header p {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+/* ── Capabilities grid ── */
+.ff-about-cap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+}
+
+.ff-about-cap-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  transition: border-color var(--dur-std);
+}
+
+.ff-about-cap-card:hover {
+  border-color: var(--border-default);
+}
+
+.ff-about-cap-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--neon-blue);
+  background: rgba(79, 156, 249, 0.08);
+  border: 1px solid rgba(79, 156, 249, 0.15);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  align-self: flex-start;
+}
+
+.ff-about-cap-card h3 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ff-about-cap-card p {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Steps ── */
+.ff-about-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.ff-about-step {
+  display: flex;
+  gap: var(--sp-5);
+  align-items: flex-start;
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  transition: background var(--dur-std);
+}
+
+.ff-about-step:last-child { border-bottom: none; }
+
+.ff-about-step:hover { background: var(--bg-surface); }
+
+.ff-about-step-num {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--neon-blue);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  width: 28px;
+  padding-top: 2px;
+}
+
+.ff-about-step h3 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--sp-1);
+}
+
+.ff-about-step p {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Tech stack ── */
+.ff-about-stack {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+
+.ff-about-stack-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.ff-about-stack-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ff-about-stack-value {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Footer CTA ── */
+.ff-about-footer-cta {
+  padding: var(--sp-8) var(--sp-5);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  position: relative;
+  z-index: 1;
+}
+
+.ff-about-footer-cta h2 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ff-about-footer-cta p {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+/* ── About responsive ── */
+@media (max-width: 767px) {
+  .ff-about-hero { padding: var(--sp-6) var(--sp-4) var(--sp-5); }
+  .ff-about-section { padding: var(--sp-5) var(--sp-4); }
+  .ff-about-cap-grid { grid-template-columns: 1fr; }
+  .ff-about-stack { grid-template-columns: 1fr 1fr; }
+  .ff-about-step { padding: var(--sp-4); gap: var(--sp-3); }
+  .ff-about-footer-cta { padding: var(--sp-6) var(--sp-4); }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .ff-about-cap-grid { grid-template-columns: repeat(2, 1fr); }
+  .ff-about-stack { grid-template-columns: repeat(2, 1fr); }
 }
