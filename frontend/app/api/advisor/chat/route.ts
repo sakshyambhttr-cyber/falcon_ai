@@ -159,6 +159,18 @@ function buildFallbackAnswer(question: string, ctx: AdvisorChatRequest['context'
   ])
 }
 
+/**
+ * GEMINI MODEL RESOLUTION — tries models in order until one works
+ */
+const GEMINI_MODELS_CHAT = [
+  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.0-pro',
+]
+
 async function callGeminiForChat(
   question: string,
   ctx: AdvisorChatRequest['context'],
@@ -189,36 +201,47 @@ Respond as a warm, direct, experienced advisor. Rules:
 - Be honest, not just encouraging — if there's a real concern, say it
 - End with one concrete next step or question back to them`
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
+  const requestBody = {
+    contents: [{ parts: [{ text: systemPrompt }] }],
+    generationConfig: {
+      temperature: 0.85,
+      topP: 0.95,
+      maxOutputTokens: 220,
+    }
+  }
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: systemPrompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 200,
-        stopSequences: ['\n\n\n']
-      }
+  let lastError = ''
+  for (const model of GEMINI_MODELS_CHAT) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
     })
-  })
-
-  if (!res.ok) throw new Error(`Gemini ${res.status}`)
-
-  const data = await res.json()
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) throw new Error('Empty Gemini response')
-
-  // Clean for voice
-  return text
-    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/`[^`]+`/g, '')
-    .replace(/\n{2,}/g, ' ')
-    .replace(/\n/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+    if (res.status === 404) {
+      console.warn(`[Gemini/chat] Model ${model} not found, trying next...`)
+      continue
+    }
+    if (!res.ok) {
+      lastError = `HTTP ${res.status}`
+      const errBody = await res.text().catch(() => '')
+      console.error(`[Gemini/chat] ${model} failed ${res.status}:`, errBody.slice(0, 200))
+      throw new Error(`Gemini ${res.status}`)
+    }
+    console.log(`[Gemini/chat] Using model: ${model}`)
+    const data = await res.json()
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+    if (!text) throw new Error('Empty Gemini response')
+    return text
+      .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/`[^`]+`/g, '')
+      .replace(/\n{2,}/g, ' ')
+      .replace(/\n/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+  throw new Error(`All Gemini models failed. Last error: ${lastError}`)
 }
 
 export async function POST(request: Request) {

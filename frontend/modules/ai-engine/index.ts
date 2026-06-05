@@ -149,6 +149,43 @@ export function sanitizeStartupIdea(input: string): string {
   return idea
 }
 
+/**
+ * GEMINI MODEL RESOLUTION
+ *
+ * Tries models in order of preference.
+ * gemini-2.5-flash and gemini-2.0-flash-exp are the current working models.
+ * Falls back down the list if a model is not found (404).
+ */
+const GEMINI_MODELS = [
+  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.0-pro',
+]
+
+async function callGeminiModel(
+  body: object,
+  apiKey: string
+): Promise<Response> {
+  for (const model of GEMINI_MODELS) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    // If NOT a 404 (model not found), return whatever response we got
+    if (res.status !== 404) {
+      console.log(`[Gemini/ai-engine] Using model: ${model} (HTTP ${res.status})`)
+      return res
+    }
+    console.warn(`[Gemini/ai-engine] Model ${model} returned 404, trying next...`)
+  }
+  throw new Error('All Gemini models returned 404 — no valid model found for this API key')
+}
+
 async function callGemini(idea: string, apiKey: string): Promise<AIEngineResponse> {
   const prompt = `You are Founder Falcon, an experienced startup co-founder and elite product strategist.
 Your role is to analyze the following startup idea as a conversational, highly capable AI Co-Founder who is strategic, confident, and concise.
@@ -226,15 +263,13 @@ Return a single valid JSON object. Do NOT wrap the JSON in markdown code blocks 
   }
 }`
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
-  const apiResponse = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const apiResponse = await callGeminiModel(
+    {
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { responseMimeType: 'application/json' }
-    })
-  })
+    },
+    apiKey
+  )
 
   if (!apiResponse.ok) {
     const errorBody = await apiResponse.text().catch(() => '(unreadable)')

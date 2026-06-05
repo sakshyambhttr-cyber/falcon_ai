@@ -45,6 +45,41 @@ const StreamChatSchema = z.object({
 
 type StreamChatRequest = z.infer<typeof StreamChatSchema>
 
+/**
+ * GEMINI MODEL RESOLUTION — tries models in order until one works
+ */
+const GEMINI_MODELS = [
+  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.0-pro',
+]
+
+async function callGeminiGenerate(
+  body: object,
+  apiKey: string,
+  signal?: AbortSignal
+): Promise<{ ok: boolean; status: number; data: unknown }> {
+  for (const model of GEMINI_MODELS) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    })
+    if (res.status !== 404) {
+      console.log(`[Gemini/stream] Using model: ${model} (HTTP ${res.status})`)
+      const data = await res.json().catch(() => null)
+      return { ok: res.ok, status: res.status, data }
+    }
+    console.warn(`[Gemini/stream] Model ${model} not found, trying next...`)
+  }
+  return { ok: false, status: 404, data: null }
+}
+
 function isPlaceholderKey(key: string | undefined): boolean {
   if (!key || key.length < 8) return true
   const n = key.trim().toLowerCase()
@@ -268,8 +303,7 @@ export async function POST(request: Request) {
     })
   }
 
-  // ── Gemini request + local SSE re-streaming ───────────────────────────────────
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`
+  // ── Gemini request — uses model resolver for compatibility ──────────────────
   const geminiRequest = buildGeminiRequest(question, context)
 
   const stream = new ReadableStream({
@@ -279,16 +313,15 @@ export async function POST(request: Request) {
       }
 
       try {
-        const geminiRes = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(geminiRequest),
-          signal: request.signal
-        })
+        const result = await callGeminiGenerate(
+          geminiRequest,
+          apiKey!,
+          request.signal
+        )
 
-        if (!geminiRes.ok || !geminiRes.body) {
-          const errBody = geminiRes.ok ? '' : await geminiRes.text().catch(() => '')
-          console.error(`[Gemini/stream] HTTP ${geminiRes.status} from Gemini:`, errBody.slice(0, 300))
+        if (!result.ok) {
+          const errMsg = (result.data as { error?: { message?: string } })?.error?.message ?? `HTTP ${result.status}`
+          console.error(`[Gemini/stream] Failed: ${errMsg.slice(0, 200)}`)
           const fallback = buildFallbackAnswer(question, context)
           for (const word of fallback.split(/\s+/)) {
             if (!word) continue
@@ -299,8 +332,8 @@ export async function POST(request: Request) {
           return
         }
 
-        const data = await geminiRes.json().catch(() => null)
-        const rawAnswer = data?.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text ?? '').join('') ?? ''
+        const rawAnswer = (result.data as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> })
+          ?.candidates?.[0]?.content?.parts?.map(p => p.text ?? '').join('') ?? ''
         const final = cleanForVoice(rawAnswer) || buildFallbackAnswer(question, context)
 
         for (const word of final.split(/\s+/)) {
